@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin(origins = "http://localhost:8080")
 public class AdminController {
     private final AdminService adminService;
 
@@ -20,38 +19,11 @@ public class AdminController {
     }
 
     // 管理员登录
-//    @PostMapping("/login")
-//    public String login(@RequestParam String username, @RequestParam String password) {
-//        boolean isValid = adminService.validateAdminLogin(username, password);
-//        return isValid ? "Login successful!" : "Invalid username or password.";
-//    }
-    @RestController
-    @RequestMapping("/admin")
-    public class AdminController {
-        @Autowired
-        private AdminService adminService;
-
-        @PostMapping("/login")
-        public R login(@RequestBody LoginDTO loginDTO) {
-            String token = adminService.login(loginDTO);
-            return R.ok().data("token", token);
-        }
-
-        @PostMapping("/teacher")
-        @PreAuthorize("hasRole('ADMIN')")
-        public R addTeacher(@RequestBody TeacherDTO teacherDTO) {
-            adminService.addTeacher(teacherDTO);
-            return R.ok();
-        }
-
-        @PostMapping("/student")
-        @PreAuthorize("hasRole('ADMIN')")
-        public R addStudent(@RequestBody StudentDTO studentDTO) {
-            adminService.addStudent(studentDTO);
-            return R.ok();
-        }
+    @PostMapping("/login")
+    public String login(@RequestParam String username, @RequestParam String password) {
+        boolean isValid = adminService.validateAdminLogin(username, password);
+        return isValid ? "Login successful!" : "Invalid username or password.";
     }
-
 
     // 获取当前管理员的信息
     @GetMapping("/{id}")
