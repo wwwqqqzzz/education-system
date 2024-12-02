@@ -25,7 +25,8 @@ public interface EnrollmentMapper {
     List<Enrollment> getEnrollmentsByCourseId(int courseId);
 
     // 修改成绩
-    @Update("UPDATE enrollment SET grade = #{grade} WHERE student_id = #{studentId} AND course_id = #{courseId}")
-    int updateGrade(@Param("studentId") int studentId, @Param("courseId") int courseId, @Param("grade") Double grade);
+    @Update("UPDATE enrollment SET grade = #{grade} WHERE course_id = #{courseId} AND student_id = #{studentId}")
+    int updateGrade(@Param("courseId") int courseId, @Param("studentId") int studentId, @Param("grade") Double grade);
+
 }
 

@@ -19,6 +19,9 @@ public interface AdminMapper {
     @Select("SELECT * FROM admin WHERE id = #{id}")
     Admin findAdminById(int id);
 
+    @Select("SELECT * FROM admin")
+    List<Admin> findAllAdmins();
+
     @Insert("INSERT INTO admin (username, password, name, phone, email) VALUES (#{username}, #{password}, #{name}, #{phone}, #{email})")
     int insertAdmin(Admin admin);
 
@@ -28,8 +31,6 @@ public interface AdminMapper {
     @Delete("DELETE FROM admin WHERE id = #{id}")
     int deleteAdminById(int id);
 
-    @Select("SELECT * FROM admin")
-    List<Admin> findAllAdmins();
 
 //    登陆
     @Select("SELECT * FROM admin WHERE username = #{username} AND password = #{password}")

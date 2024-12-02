@@ -5,46 +5,22 @@
  */
 package com.example.education.service;
 
-import com.example.education.entity.Admin;
 import com.example.education.entity.Student;
 import com.example.education.mapper.StudentMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class StudentService {
-    /**
-     * 原本内容
-     * private final StudentMapper studentMapper;
-     *
-     *     public StudentService(StudentMapper studentMapper) {
-     *         this.studentMapper = studentMapper;
-     *     }
-     *
-     *     public List<Student> getAllStudents() {
-     *         return studentMapper.findAll();
-     *     }
-     *
-     *     public int addStudent(Student student) {
-     *         return studentMapper.insertStudent(student);
-     *     }
-     *
-     *     public int updateStudent(Student student) {
-     *         return studentMapper.updateStudent(student);
-     *     }
-     *
-     *     public int deleteStudent(int id) {
-     *         return studentMapper.deleteStudent(id);
-     *     }
-     */
-
     private final StudentMapper studentMapper;
 
     public StudentService(StudentMapper studentMapper) {
         this.studentMapper = studentMapper;
     }
 
+    // 管理员功能
     public List<Student> getAllStudents() {
         return studentMapper.findAll();
     }
@@ -65,11 +41,16 @@ public class StudentService {
         return studentMapper.deleteById(id) > 0;
     }
 
-    //student登陆
-    public boolean validateStudentLogin(String username, String password) {
-        Student student = studentMapper.findStudentByUsername(username);
-        return student != null && student.getPassword().equals(password);
+    // 学生个人功能
+    public Student getStudentByUsername(String username) {
+        return studentMapper.findStudentByUsername(username);
     }
 
+    public boolean validateStudentLogin(String username, String password) {
+        return studentMapper.validateLogin(username, password) > 0;
+    }
 
+    public List<Map<String, Object>> getStudentCoursesAndGrades(int studentId) {
+        return studentMapper.findStudentCoursesAndGrades(studentId);
+    }
 }

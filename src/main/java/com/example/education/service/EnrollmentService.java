@@ -41,7 +41,7 @@ public class EnrollmentService {
     }
 
     // 修改成绩
-    public boolean updateGrade(int studentId, int courseId, Double grade) {
+    public boolean updateStudentGrade(int studentId, int courseId, Double grade) {
         return enrollmentMapper.updateGrade(studentId, courseId, grade) > 0;
     }
 }

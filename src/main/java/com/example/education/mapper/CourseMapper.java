@@ -19,13 +19,20 @@ public interface CourseMapper {
     // 插入课程
     @Insert("INSERT INTO course (name, description, teacher_id) " +
             "VALUES (#{name}, #{description}, #{teacherId})")
+    @Options(useGeneratedKeys = true, keyProperty = "id")
     int insertCourse(Course course);
 
     // 更新课程
-    @Update("UPDATE course SET name=#{name}, description=#{description}, teacher_id=#{teacherId} WHERE id=#{id}")
+    @Update("UPDATE course SET name = #{name}, description = #{description}, " +
+            "teacher_id = #{teacherId} WHERE id = #{id}")
     int updateCourse(Course course);
 
     // 删除课程
-    @Delete("DELETE FROM course WHERE id=#{id}")
+    @Delete("DELETE FROM course WHERE id = #{id}")
     int deleteCourse(int id);
+
+    // 根据教师 ID 查询课程
+    @Select("SELECT * FROM course WHERE teacher_id = #{teacherId}")
+    List<Course> findCoursesByTeacherId(int teacherId);
+
 }

@@ -5,7 +5,7 @@
  */
 package com.example.education.service;
 
-import com.example.education.entity.Admin;
+import com.example.education.entity.Course;
 import com.example.education.entity.Teacher;
 import com.example.education.mapper.TeacherMapper;
 import org.springframework.stereotype.Service;
@@ -15,31 +15,6 @@ import java.util.List;
 @Service
 public class TeacherService {
 
-    /**
-     * 原来内容
-     *
-     * private final TeacherMapper teacherMapper;
-     *
-     *     public TeacherService(TeacherMapper teacherMapper) {
-     *         this.teacherMapper = teacherMapper;
-     *     }
-     *
-     *     public List<Teacher> getAllTeachers() {
-     *         return teacherMapper.findAll();
-     *     }
-     *
-     *     public int addTeacher(Teacher teacher) {
-     *         return teacherMapper.insertTeacher(teacher);
-     *     }
-     *
-     *     public int updateTeacher(Teacher teacher) {
-     *         return teacherMapper.updateTeacher(teacher);
-     *     }
-     *
-     *     public int deleteTeacher(int id) {
-     *         return teacherMapper.deleteTeacher(id);
-     *     }
-     */
 
     private final TeacherMapper teacherMapper;
 
@@ -58,7 +33,6 @@ public class TeacherService {
     }
 
     public boolean addTeacher(Teacher teacher) {
-        // 插入数据库
         return teacherMapper.insert(teacher) > 0;
     }
 
@@ -70,11 +44,24 @@ public class TeacherService {
         return teacherMapper.deleteById(id) > 0;
     }
 
-    //teacher登陆
-    public boolean validateTeacherLogin(String username, String password) {
-        Teacher teacher = teacherMapper.findTeacherByUsername(username);
-        return teacher != null && teacher.getPassword().equals(password);
+    public Teacher getTeacherByUsername(String username) {
+        return teacherMapper.findTeacherByUsername(username);
     }
 
+    public boolean validateTeacherLogin(String username, String password) {
+        return teacherMapper.validateLogin(username, password) > 0;
+    }
+
+    public List<Course> getTeacherCourses(Integer teacherId) {
+        return teacherMapper.findCoursesByTeacherId(teacherId);
+    }
+
+    public boolean addStudentGrade(int courseId, int studentId, double grade) {
+        return teacherMapper.insertStudentGrade(courseId, studentId, grade) > 0;
+    }
+
+    public boolean updateStudentGrade(int courseId, int studentId, double grade) {
+        return teacherMapper.updateStudentGrade(courseId, studentId, grade) > 0;
+    }
 }
 

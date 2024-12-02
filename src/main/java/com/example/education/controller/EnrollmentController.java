@@ -9,13 +9,12 @@ import com.example.education.entity.Enrollment;
 import com.example.education.service.EnrollmentService;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
-@RequestMapping("/enrollments")
-@CrossOrigin(origins = "http://localhost:8080")
+@RequestMapping("/student/enrollments")  // 修改路径以反映这是学生的选课功能
 public class EnrollmentController {
-
     private final EnrollmentService enrollmentService;
 
     public EnrollmentController(EnrollmentService enrollmentService) {
@@ -24,35 +23,34 @@ public class EnrollmentController {
 
     // 学生选课
     @PostMapping
-    public String addEnrollment(@RequestBody Enrollment enrollment) {
-        boolean isAdded = enrollmentService.addEnrollment(enrollment);
-        return isAdded ? "Enrollment added successfully!" : "Failed to add enrollment.";
+    public String addEnrollment(@RequestBody Enrollment enrollment, HttpSession session) {
+        Integer studentId = (Integer) session.getAttribute("userId");
+        if (studentId == null) {
+            throw new RuntimeException("Please log in first.");
+        }
+        enrollment.setStudentId(studentId);
+        return enrollmentService.addEnrollment(enrollment) ?
+                "Enrollment added successfully!" : "Failed to add enrollment.";
     }
 
     // 学生退课
-    @DeleteMapping
-    public String deleteEnrollment(@RequestParam int studentId, @RequestParam int courseId) {
-        boolean isDeleted = enrollmentService.deleteEnrollment(studentId, courseId);
-        return isDeleted ? "Enrollment deleted successfully!" : "Failed to delete enrollment.";
+    @DeleteMapping("/{courseId}")
+    public String deleteEnrollment(@PathVariable int courseId, HttpSession session) {
+        Integer studentId = (Integer) session.getAttribute("userId");
+        if (studentId == null) {
+            throw new RuntimeException("Please log in first.");
+        }
+        return enrollmentService.deleteEnrollment(studentId, courseId) ?
+                "Enrollment deleted successfully!" : "Failed to delete enrollment.";
     }
 
     // 获取学生的选课记录
-    @GetMapping("/student/{studentId}")
-    public List<Enrollment> getEnrollmentsByStudentId(@PathVariable int studentId) {
+    @GetMapping
+    public List<Enrollment> getMyEnrollments(HttpSession session) {
+        Integer studentId = (Integer) session.getAttribute("userId");
+        if (studentId == null) {
+            throw new RuntimeException("Please log in first.");
+        }
         return enrollmentService.getEnrollmentsByStudentId(studentId);
     }
-
-    // 获取课程的选课记录
-    @GetMapping("/course/{courseId}")
-    public List<Enrollment> getEnrollmentsByCourseId(@PathVariable int courseId) {
-        return enrollmentService.getEnrollmentsByCourseId(courseId);
-    }
-
-    // 修改成绩
-    @PutMapping
-    public String updateGrade(@RequestParam int studentId, @RequestParam int courseId, @RequestParam Double grade) {
-        boolean isUpdated = enrollmentService.updateGrade(studentId, courseId, grade);
-        return isUpdated ? "Grade updated successfully!" : "Failed to update grade.";
-    }
 }
-

@@ -1,49 +1,52 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Login from '../views/Login.vue';
-import AdminDashboard from '../views/Admin/AdminDashboard.vue';
-import StudentManagement from '../views/Admin/StudentManagement.vue';
-import TeacherManagement from '../views/Admin/TeacherManagement.vue';
-import CourseManagement from '../views/Admin/CourseManagement.vue';
-import AdminManagement from '../views/Admin/AdminManagement.vue';
-import TeacherDashboard from '../views/Teacher/TeacherDashboard.vue';
-import ManageGrades from '../views/Teacher/ManageGrades.vue';
-import TeacherProfile from '../views/Teacher/TeacherProfile.vue';
-import StudentDashboard from '../views/Student/StudentDashboard.vue';
-import CourseSelection from '../views/Student/CourseSelection.vue';
-import StudentProfile from '../views/Student/StudentProfile.vue';
+import Login from '@/views/Login.vue';
+import AdminDashboard from '@/views/admin/Dashboard.vue';
+import TeacherDashboard from '@/views/teacher/Dashboard.vue';
+import StudentDashboard from '@/views/student/Dashboard.vue';
+import StudentManagement from '@/views/admin/StudentManagement.vue';
+import TeacherManagement from '@/views/admin/TeacherManagement.vue';
+import AdminManagement from '@/views/admin/AdminManagement.vue';
+import CourseManagement from '@/views/admin/CourseManagement.vue';
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
+  mode: 'history',
   routes: [
     { path: '/', redirect: '/login' },
     { path: '/login', name: 'Login', component: Login },
-    {
-      path: '/admin',
+    { 
+      path: '/admin/dashboard', 
       component: AdminDashboard,
       children: [
-        { path: 'students', name: 'StudentManagement', component: StudentManagement },
-        { path: 'teachers', name: 'TeacherManagement', component: TeacherManagement },
-        { path: 'courses', name: 'CourseManagement', component: CourseManagement },
-        { path: 'admins', name: 'AdminManagement', component: AdminManagement },
-      ],
+        { path: '/admin/students', name: 'StudentManagement', component: StudentManagement },
+        { path: '/admin/teachers', name: 'TeacherManagement', component: TeacherManagement },
+        { path: '/admin/admins', name: 'AdminManagement', component: AdminManagement },
+        { path: '/admin/courses', name: 'CourseManagement', component: CourseManagement }
+      ]
     },
-    {
-      path: '/teacher',
-      component: TeacherDashboard,
-      children: [
-        { path: 'grades', name: 'ManageGrades', component: ManageGrades },
-        { path: 'profile', name: 'TeacherProfile', component: TeacherProfile },
-      ],
-    },
-    {
-      path: '/student',
-      component: StudentDashboard,
-      children: [
-        { path: 'courses', name: 'CourseSelection', component: CourseSelection },
-        { path: 'profile', name: 'StudentProfile', component: StudentProfile },
-      ],
-    },
+    { path: '/teacher/dashboard', name: 'TeacherDashboard', component: TeacherDashboard },
+    { path: '/student/dashboard', name: 'StudentDashboard', component: StudentDashboard },
   ],
 });
+
+// 路由守卫
+router.beforeEach((to, from, next) => {
+  const role = localStorage.getItem('role');
+  if (to.path === '/login') {
+    next();
+  } else if (!role) {
+    next('/login');
+  } else if (to.path.startsWith('/admin') && role !== 'admin') {
+    next('/login');
+  } else if (to.path.startsWith('/teacher') && role !== 'teacher') {
+    next('/login');
+  } else if (to.path.startsWith('/student') && role !== 'student') {
+    next('/login');
+  } else {
+    next();
+  }
+});
+
+export default router;

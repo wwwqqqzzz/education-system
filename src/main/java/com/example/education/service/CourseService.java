@@ -39,5 +39,6 @@ public class CourseService {
     public int deleteCourse(int id) {
         return courseMapper.deleteCourse(id);
     }
+
 }
 

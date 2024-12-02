@@ -6,6 +6,7 @@
 package com.example.education.service;
 
 import com.example.education.entity.Admin;
+import com.example.education.entity.Student;
 import com.example.education.mapper.AdminMapper;
 import org.springframework.stereotype.Service;
 
@@ -29,8 +30,8 @@ public class AdminService {
 
     // 验证管理员登录
     public boolean validateAdminLogin(String username, String password) {
-        Admin admin = adminMapper.findByUsernameAndPassword(username, password);
-        return admin != null;
+        Admin admin = adminMapper.findAdminByUsername(username);
+        return admin != null && admin.getPassword().equals(password);
     }
 
     // 根据 ID 获取管理员信息
@@ -57,5 +58,6 @@ public class AdminService {
     public List<Admin> getAllAdmins() {
         return adminMapper.findAllAdmins();
     }
+
 
 }
