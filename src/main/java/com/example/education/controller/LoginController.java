@@ -13,6 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
 public class LoginController {
 
     private final AdminService adminService;
@@ -35,19 +36,29 @@ public class LoginController {
 
         switch (role) {
             case "admin":
-                Admin admin = adminService.getAdminByUsername(username);
-                if (admin != null && admin.getPassword().equals(password)) {
-                    response.put("role", "admin");
-                    response.put("data", admin);
+                if (adminService.validateAdminLogin(username, password)) {
                     response.put("message", "Login successful!");
-                    response.put("token", "admin-token-" + System.currentTimeMillis());
-                    return response;
+                    response.put("role", "admin");
                 }
                 break;
-            // ... 其他角色的case
+            case "teacher":
+                if (teacherService.validateTeacherLogin(username, password)) {
+                    response.put("message", "Login successful!");
+                    response.put("role", "teacher");
+                }
+                break;
+            case "student":
+                if (studentService.validateStudentLogin(username, password)) {
+                    response.put("message", "Login successful!");
+                    response.put("role", "student");
+                }
+                break;
         }
 
-        response.put("message", "Invalid username or password.");
+        if (!response.containsKey("message")) {
+            response.put("message", "Invalid username or password");
+        }
+
         return response;
     }
 }

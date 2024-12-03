@@ -61,4 +61,36 @@ public class StudentPersonalController {
         }
         return studentService.getStudentById(studentId);
     }
+
+    // 获取可选课程列表
+    @GetMapping("/available-courses")
+    public List<Map<String, Object>> getAvailableCourses(HttpSession session) {
+        Integer studentId = (Integer) session.getAttribute("userId");
+        if (studentId == null) {
+            throw new RuntimeException("Please log in first.");
+        }
+        return studentService.getAvailableCourses(studentId);
+    }
+
+    // 选课
+    @PostMapping("/courses/{courseId}/select")
+    public String selectCourse(HttpSession session, @PathVariable Integer courseId) {
+        Integer studentId = (Integer) session.getAttribute("userId");
+        if (studentId == null) {
+            throw new RuntimeException("Please log in first.");
+        }
+        return studentService.selectCourse(studentId, courseId) ? 
+               "Course selected successfully!" : "Failed to select course.";
+    }
+
+    // 退课
+    @DeleteMapping("/courses/{courseId}/drop")
+    public String dropCourse(HttpSession session, @PathVariable Integer courseId) {
+        Integer studentId = (Integer) session.getAttribute("userId");
+        if (studentId == null) {
+            throw new RuntimeException("Please log in first.");
+        }
+        return studentService.dropCourse(studentId, courseId) ? 
+               "Course dropped successfully!" : "Failed to drop course.";
+    }
 }

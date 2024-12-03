@@ -11,46 +11,39 @@ import javax.servlet.http.HttpServletResponse;
 public class RoleInterceptor implements HandlerInterceptor {
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 对于 OPTIONS 请求直接放行
         if (request.getMethod().equals("OPTIONS")) {
+            return true;
+        }
+
+        // 对于登录请求直接放行
+        if (request.getRequestURI().endsWith("/login")) {
             return true;
         }
 
         // 获取用户角色
         Role userRole = (Role) request.getSession().getAttribute("role");
         String requestURI = request.getRequestURI();
-        
-        // 检查请求头中的 token
-        String token = request.getHeader("Authorization");
-        if (token != null && token.startsWith("Bearer ")) {
-            // 如果有 token，暂时允许通过（后续可以添加 token 验证逻辑）
-            return true;
-        }
 
         // 未登录的用户
         if (userRole == null) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Please log in.");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
 
         // 判断不同角色的访问权限
-        if (requestURI.startsWith("/admin")) {
-            if (userRole != Role.ADMIN) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not authorized to access this resource.");
-                return false;
-            }
-        } else if (requestURI.startsWith("/teacher")) {
-            if (userRole != Role.TEACHER) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not authorized to access this resource.");
-                return false;
-            }
-        } else if (requestURI.startsWith("/student")) {
-            if (userRole != Role.STUDENT) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not authorized to access this resource.");
-                return false;
-            }
+        if (requestURI.startsWith("/admin") && userRole != Role.ADMIN) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return false;
+        } else if (requestURI.startsWith("/teacher") && userRole != Role.TEACHER) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return false;
+        } else if (requestURI.startsWith("/student") && userRole != Role.STUDENT) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return false;
         }
+
         return true;
     }
 }

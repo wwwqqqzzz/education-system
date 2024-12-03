@@ -33,9 +33,31 @@ public interface StudentMapper {
     @Select("SELECT COUNT(*) FROM student WHERE username = #{username} AND password = #{password}")
     int validateLogin(@Param("username") String username, @Param("password") String password);
 
-    @Select("SELECT c.id AS courseId, c.name AS courseName, e.grade " +
-            "FROM enrollment e " +
-            "JOIN course c ON e.course_id = c.id " +
+    @Select("SELECT c.id as course_id, c.name as course_name, " +
+            "t.name as teacher_name, g.grade, g.created_at " +
+            "FROM course c " +
+            "JOIN teacher t ON c.teacher_id = t.id " +
+            "JOIN enrollment e ON c.id = e.course_id " +
+            "LEFT JOIN grade g ON e.course_id = g.course_id AND e.student_id = g.student_id " +
             "WHERE e.student_id = #{studentId}")
-    List<Map<String, Object>> findStudentCoursesAndGrades(int studentId);
+    List<Map<String, Object>> findStudentCoursesAndGrades(Integer studentId);
+
+    @Select("SELECT c.id as course_id, c.name as course_name, " +
+            "c.description, t.name as teacher_name " +
+            "FROM course c " +
+            "JOIN teacher t ON c.teacher_id = t.id " +
+            "WHERE c.id NOT IN (SELECT course_id FROM enrollment WHERE student_id = #{studentId})")
+    List<Map<String, Object>> findAvailableCourses(Integer studentId);
+
+    @Select("SELECT COUNT(*) FROM enrollment WHERE student_id = #{studentId} AND course_id = #{courseId}")
+    int checkEnrollment(@Param("studentId") Integer studentId, @Param("courseId") Integer courseId);
+
+    @Select("SELECT COUNT(*) FROM grade WHERE student_id = #{studentId} AND course_id = #{courseId}")
+    int checkGradeExists(@Param("studentId") Integer studentId, @Param("courseId") Integer courseId);
+
+    @Insert("INSERT INTO enrollment (student_id, course_id) VALUES (#{studentId}, #{courseId})")
+    int insertEnrollment(@Param("studentId") Integer studentId, @Param("courseId") Integer courseId);
+
+    @Delete("DELETE FROM enrollment WHERE student_id = #{studentId} AND course_id = #{courseId}")
+    int deleteEnrollment(@Param("studentId") Integer studentId, @Param("courseId") Integer courseId);
 }

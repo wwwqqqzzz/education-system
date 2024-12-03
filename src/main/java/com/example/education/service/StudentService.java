@@ -53,4 +53,25 @@ public class StudentService {
     public List<Map<String, Object>> getStudentCoursesAndGrades(int studentId) {
         return studentMapper.findStudentCoursesAndGrades(studentId);
     }
+
+    // 新增选课相关功能
+    public List<Map<String, Object>> getAvailableCourses(Integer studentId) {
+        return studentMapper.findAvailableCourses(studentId);
+    }
+
+    public boolean selectCourse(Integer studentId, Integer courseId) {
+        // 检查是否已经选过这门课
+        if (studentMapper.checkEnrollment(studentId, courseId) > 0) {
+            return false;
+        }
+        return studentMapper.insertEnrollment(studentId, courseId) > 0;
+    }
+
+    public boolean dropCourse(Integer studentId, Integer courseId) {
+        // 检查是否已经有成绩
+        if (studentMapper.checkGradeExists(studentId, courseId) > 0) {
+            return false; // 已有成绩的课程不能退选
+        }
+        return studentMapper.deleteEnrollment(studentId, courseId) > 0;
+    }
 }

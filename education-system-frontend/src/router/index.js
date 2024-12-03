@@ -11,6 +11,9 @@ import AdminManagement from '@/views/admin/AdminManagement.vue';
 import CourseManagement from '@/views/admin/CourseManagement.vue';
 import TeacherGrades from '@/views/teacher/TeacherGrades.vue';
 import TeacherCourses from '@/views/teacher/TeacherCourses.vue';
+import StudentProfile from '@/views/student/StudentProfile.vue';
+import StudentCourses from '@/views/student/StudentCourses.vue';
+import StudentGrades from '@/views/student/StudentGrades.vue';
 
 Vue.use(VueRouter);
 
@@ -62,7 +65,32 @@ const routes = [
       }
     ]
   },
-  { path: '/student/dashboard', name: 'StudentDashboard', component: StudentDashboard },
+  {
+    path: '/student/dashboard',
+    name: 'StudentDashboard',
+    component: StudentDashboard,
+    children: [
+      {
+        path: '/student/profile',
+        name: 'StudentProfile',
+        component: StudentProfile
+      },
+      {
+        path: '/student/courses',
+        name: 'StudentCourses',
+        component: StudentCourses
+      },
+      {
+        path: '/student/grades',
+        name: 'StudentGrades',
+        component: StudentGrades
+      },
+      {
+        path: '',
+        redirect: '/student/profile'
+      }
+    ]
+  },
 ];
 
 const router = new VueRouter({

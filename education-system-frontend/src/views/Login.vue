@@ -1,5 +1,5 @@
 <script>
-import axios from 'axios';
+import request from '@/utils/request'
 
 export default {
   name: "Login",
@@ -26,14 +26,24 @@ export default {
             params.append('username', this.loginForm.username);
             params.append('password', this.loginForm.password);
 
-            const response = await axios.post(`/${this.loginForm.role}/login`, params);
+            let response;
+            switch(this.loginForm.role) {
+              case 'admin':
+                response = await request.post('/admin/login', params);
+                break;
+              case 'teacher':
+                response = await request.post('/teacher/login', params);
+                break;
+              case 'student':
+                response = await request.post('/student/login', params);
+                break;
+            }
 
             if (response.data.message === "Login successful!") {
               this.$message.success("登录成功！");
               localStorage.setItem("role", this.loginForm.role);
               localStorage.setItem("username", this.loginForm.username);
-              localStorage.setItem("userId", response.data.userId);
-
+              
               switch(this.loginForm.role) {
                 case "admin":
                   this.$router.push("/admin/dashboard");
