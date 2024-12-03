@@ -11,6 +11,7 @@ import com.example.education.mapper.TeacherMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TeacherService {
@@ -56,12 +57,30 @@ public class TeacherService {
         return teacherMapper.findCoursesByTeacherId(teacherId);
     }
 
-    public boolean addStudentGrade(int courseId, int studentId, double grade) {
-        return teacherMapper.insertStudentGrade(courseId, studentId, grade) > 0;
+    public List<Map<String, Object>> getStudentsByCourse(Integer courseId) {
+        return teacherMapper.findStudentsByCourse(courseId);
     }
 
     public boolean updateStudentGrade(int courseId, int studentId, double grade) {
-        return teacherMapper.updateStudentGrade(courseId, studentId, grade) > 0;
+        try {
+            // 检查学生是否选修了这门课程
+            if (teacherMapper.checkEnrollment(courseId, studentId) == 0) {
+                return false;
+            }
+
+            if (teacherMapper.checkGradeExists(courseId, studentId) > 0) {
+                return teacherMapper.updateStudentGrade(courseId, studentId, grade) > 0;
+            } else {
+                return teacherMapper.insertStudentGrade(courseId, studentId, grade) > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public int getStudentCount(Integer courseId) {
+        return teacherMapper.getStudentCount(courseId);
     }
 }
 

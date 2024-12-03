@@ -18,6 +18,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/teacher")
+@CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
 public class TeacherPersonalController {
     private final TeacherService teacherService;
 
@@ -35,6 +36,7 @@ public class TeacherPersonalController {
         if (isValid) {
             Teacher teacher = teacherService.getTeacherByUsername(username);
             session.setAttribute("userId", teacher.getId());
+            session.setAttribute("username", username);
             session.setAttribute("role", Role.TEACHER);
             response.put("message", "Login successful!");
         } else {
@@ -46,29 +48,43 @@ public class TeacherPersonalController {
     // 获取教师个人信息
     @GetMapping("/profile")
     public Teacher getProfile(HttpSession session) {
-        Integer teacherId = (Integer) session.getAttribute("userId");
-        if (teacherId == null) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
             throw new RuntimeException("Please log in first.");
         }
-        return teacherService.getTeacherById(teacherId);
+        return teacherService.getTeacherById(userId);
     }
 
-    // 获取教师的课程
+    // 获取教师的课程列表
     @GetMapping("/courses")
     public List<Course> getTeacherCourses(HttpSession session) {
-        Integer teacherId = (Integer) session.getAttribute("userId");
-        if (teacherId == null) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
             throw new RuntimeException("Please log in first.");
         }
-        return teacherService.getTeacherCourses(teacherId);
+        return teacherService.getTeacherCourses(userId);
     }
 
-    // 录入学生成绩
-    @PostMapping("/courses/{courseId}/students/{studentId}/grade")
-    public String addStudentGrade(@PathVariable int courseId,
-                                  @PathVariable int studentId,
-                                  @RequestParam double grade) {
-        return teacherService.addStudentGrade(courseId, studentId, grade) ?
-                "Grade added successfully!" : "Failed to add grade.";
+    // 获取某门课程的学生列表及其成绩
+    @GetMapping("/courses/{courseId}/students")
+    public List<Map<String, Object>> getCourseStudents(@PathVariable Integer courseId) {
+        return teacherService.getStudentsByCourse(courseId);
+    }
+
+    // 录入或更新学生成绩
+    @PostMapping("/grades")
+    public String saveGrade(@RequestBody Map<String, Object> gradeInfo) {
+        Integer studentId = Integer.parseInt(gradeInfo.get("studentId").toString());
+        Integer courseId = Integer.parseInt(gradeInfo.get("courseId").toString());
+        Double grade = Double.parseDouble(gradeInfo.get("grade").toString());
+        
+        boolean success = teacherService.updateStudentGrade(courseId, studentId, grade);
+        return success ? "Grade saved successfully!" : "Failed to save grade.";
+    }
+
+    // 获取课程选课人数
+    @GetMapping("/courses/{courseId}/student-count")
+    public Integer getStudentCount(@PathVariable Integer courseId) {
+        return teacherService.getStudentCount(courseId);
     }
 }

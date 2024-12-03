@@ -11,7 +11,7 @@
  Target Server Version : 50744 (5.7.44-log)
  File Encoding         : 65001
 
- Date: 02/12/2024 02:31:07
+ Date: 04/12/2024 01:21:09
 */
 
 SET NAMES utf8mb4;
@@ -34,12 +34,12 @@ CREATE TABLE `admin`  (
   UNIQUE INDEX `username`(`username`) USING BTREE,
   INDEX `role_id`(`role_id`) USING BTREE,
   CONSTRAINT `admin_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of admin
 -- ----------------------------
-INSERT INTO `admin` VALUES (1, 'admin', '123456', NULL, NULL, NULL, '2024-11-18 15:26:33', 1);
+INSERT INTO `admin` VALUES (2, 'admin', 'admin', 'admin', '12345678910', '312@qq.com', '2024-12-25 23:56:21', 1);
 
 -- ----------------------------
 -- Table structure for course
@@ -54,14 +54,12 @@ CREATE TABLE `course`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `teacher_id`(`teacher_id`) USING BTREE,
   CONSTRAINT `course_ibfk_1` FOREIGN KEY (`teacher_id`) REFERENCES `teacher` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 20 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of course
 -- ----------------------------
-INSERT INTO `course` VALUES (5, 'admin', 'Learn about data structures.', 1, '2024-11-18 14:51:36');
-INSERT INTO `course` VALUES (6, 'Math', 'Basic Mathematics', 1, '2024-11-18 15:14:59');
-INSERT INTO `course` VALUES (7, 'Mathematics', 'An advanced math course', 1, '2024-11-18 18:04:49');
+INSERT INTO `course` VALUES (17, 'J2EE', 'j2ee', 5, '2024-12-03 00:57:45');
 
 -- ----------------------------
 -- Table structure for enrollment
@@ -83,9 +81,28 @@ CREATE TABLE `enrollment`  (
 -- ----------------------------
 -- Records of enrollment
 -- ----------------------------
-INSERT INTO `enrollment` VALUES (4, 1, 6, 90.00, '2024-11-18 15:16:03');
-INSERT INTO `enrollment` VALUES (8, 3, 6, 90.00, '2024-11-18 15:21:48');
-INSERT INTO `enrollment` VALUES (9, 5, 7, 74.00, '2024-11-18 22:34:42');
+
+-- ----------------------------
+-- Table structure for grade
+-- ----------------------------
+DROP TABLE IF EXISTS `grade`;
+CREATE TABLE `grade`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `student_id` int(11) NOT NULL,
+  `course_id` int(11) NOT NULL,
+  `grade` decimal(5, 2) NULL DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `unique_grade`(`student_id`, `course_id`) USING BTREE,
+  INDEX `course_id`(`course_id`) USING BTREE,
+  CONSTRAINT `grade_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT `grade_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of grade
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for role
@@ -142,15 +159,14 @@ CREATE TABLE `student`  (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `username`(`username`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of student
 -- ----------------------------
-INSERT INTO `student` VALUES (1, 'wqz', 'wqz', 'wqz', '123123', '12312@as.com', 2024, '英语', '2024-11-18 02:08:30');
 INSERT INTO `student` VALUES (3, 'john_doe', '123456', 'Updated Name', '1234567890', 'updated.email@example.com', 2024, 'Software Engineering', '2024-11-18 02:33:55');
-INSERT INTO `student` VALUES (4, 'student1', '123456', 'Student One', NULL, NULL, NULL, NULL, '2024-11-18 15:14:29');
 INSERT INTO `student` VALUES (5, 'student123', 'password123', 'John Doe', '123456789', 'john.doe@example.com', 2024, 'Computer Science', '2024-11-18 16:16:31');
+INSERT INTO `student` VALUES (6, 'student', 'student', '学生', '15261433305', '2158588419@qq.com', 2020, '软件工程', '2024-12-03 00:17:28');
 
 -- ----------------------------
 -- Table structure for teacher
@@ -168,13 +184,12 @@ CREATE TABLE `teacher`  (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `username`(`username`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of teacher
 -- ----------------------------
-INSERT INTO `teacher` VALUES (1, 'wqz', 'wqz', 'wqz', '2131231', '123123@sad.com', '2024', NULL, '2024-11-18 13:32:16');
 INSERT INTO `teacher` VALUES (5, 'jane', '123456', 'Jane', '8654210', 'jane@example.com', 'Mathematics', '00:00:00', '2024-11-18 14:02:07');
-INSERT INTO `teacher` VALUES (6, 'jane_doe', '123456', 'Jane Doe', '9876543210', 'jane.doe@example.com', 'Mathematics', NULL, '2024-11-18 14:06:23');
+INSERT INTO `teacher` VALUES (6, 'jane_doe', '123456', 'Jane Doe', '98765432101', 'jane.doe@example.com', 'Mathematics', NULL, '2024-11-18 14:06:23');
 
 SET FOREIGN_KEY_CHECKS = 1;

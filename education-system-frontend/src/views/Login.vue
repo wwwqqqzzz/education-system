@@ -22,20 +22,18 @@ export default {
       this.$refs.loginForm.validate(async (valid) => {
         if (valid) {
           try {
-            // 根据选择的角色发送到不同的登录接口
-            const loginUrl = `/${this.loginForm.role}/login`;
             const params = new URLSearchParams();
             params.append('username', this.loginForm.username);
             params.append('password', this.loginForm.password);
 
-            const response = await axios.post(loginUrl, params);
+            const response = await axios.post(`/${this.loginForm.role}/login`, params);
 
             if (response.data.message === "Login successful!") {
               this.$message.success("登录成功！");
               localStorage.setItem("role", this.loginForm.role);
               localStorage.setItem("username", this.loginForm.username);
-              
-              // 根据角色跳转到不同的页面
+              localStorage.setItem("userId", response.data.userId);
+
               switch(this.loginForm.role) {
                 case "admin":
                   this.$router.push("/admin/dashboard");

@@ -3,6 +3,7 @@
     <el-aside width="200px">
       <el-menu
         :router="true"
+        :default-active="$route.path"
         background-color="#304156"
         text-color="#fff"
         active-text-color="#409EFF">

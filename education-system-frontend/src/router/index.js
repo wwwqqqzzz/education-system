@@ -1,34 +1,74 @@
 import Vue from 'vue';
-import Router from 'vue-router';
+import VueRouter from 'vue-router';
 import Login from '@/views/Login.vue';
 import AdminDashboard from '@/views/admin/Dashboard.vue';
 import TeacherDashboard from '@/views/teacher/Dashboard.vue';
+import TeacherProfile from '@/views/teacher/TeacherProfile.vue';
 import StudentDashboard from '@/views/student/Dashboard.vue';
 import StudentManagement from '@/views/admin/StudentManagement.vue';
 import TeacherManagement from '@/views/admin/TeacherManagement.vue';
 import AdminManagement from '@/views/admin/AdminManagement.vue';
 import CourseManagement from '@/views/admin/CourseManagement.vue';
+import TeacherGrades from '@/views/teacher/TeacherGrades.vue';
+import TeacherCourses from '@/views/teacher/TeacherCourses.vue';
 
-Vue.use(Router);
+Vue.use(VueRouter);
 
-const router = new Router({
+const routes = [
+  {
+    path: '/',
+    name: 'Login',
+    component: Login
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
+  },
+  {
+    path: '/admin/dashboard',
+    name: 'AdminDashboard',
+    component: AdminDashboard,
+    children: [
+      { path: '/admin/students', name: 'StudentManagement', component: StudentManagement },
+      { path: '/admin/teachers', name: 'TeacherManagement', component: TeacherManagement },
+      { path: '/admin/admins', name: 'AdminManagement', component: AdminManagement },
+      { path: '/admin/courses', name: 'CourseManagement', component: CourseManagement }
+    ]
+  },
+  {
+    path: '/teacher/dashboard',
+    name: 'TeacherDashboard',
+    component: TeacherDashboard,
+    children: [
+      {
+        path: '/teacher/profile',
+        name: 'TeacherProfile',
+        component: TeacherProfile
+      },
+      {
+        path: '/teacher/courses',
+        name: 'TeacherCourses',
+        component: TeacherCourses
+      },
+      {
+        path: '/teacher/grades',
+        name: 'TeacherGrades',
+        component: TeacherGrades
+      },
+      {
+        path: '',
+        redirect: '/teacher/profile'
+      }
+    ]
+  },
+  { path: '/student/dashboard', name: 'StudentDashboard', component: StudentDashboard },
+];
+
+const router = new VueRouter({
   mode: 'history',
-  routes: [
-    { path: '/', redirect: '/login' },
-    { path: '/login', name: 'Login', component: Login },
-    { 
-      path: '/admin/dashboard', 
-      component: AdminDashboard,
-      children: [
-        { path: '/admin/students', name: 'StudentManagement', component: StudentManagement },
-        { path: '/admin/teachers', name: 'TeacherManagement', component: TeacherManagement },
-        { path: '/admin/admins', name: 'AdminManagement', component: AdminManagement },
-        { path: '/admin/courses', name: 'CourseManagement', component: CourseManagement }
-      ]
-    },
-    { path: '/teacher/dashboard', name: 'TeacherDashboard', component: TeacherDashboard },
-    { path: '/student/dashboard', name: 'StudentDashboard', component: StudentDashboard },
-  ],
+  base: process.env.BASE_URL,
+  routes
 });
 
 // 路由守卫
