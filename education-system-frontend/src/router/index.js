@@ -33,10 +33,35 @@ const routes = [
     name: 'AdminDashboard',
     component: AdminDashboard,
     children: [
-      { path: '/admin/students', name: 'StudentManagement', component: StudentManagement },
-      { path: '/admin/teachers', name: 'TeacherManagement', component: TeacherManagement },
-      { path: '/admin/admins', name: 'AdminManagement', component: AdminManagement },
-      { path: '/admin/courses', name: 'CourseManagement', component: CourseManagement }
+      { 
+        path: '', // 默认子路由
+        name: 'AdminHome',
+        component: () => import('@/views/admin/AdminHome.vue')
+      },
+      { 
+        path: '/admin/students', 
+        name: 'StudentManagement', 
+        component: StudentManagement,
+        meta: { title: '学生管理' }
+      },
+      { 
+        path: '/admin/teachers', 
+        name: 'TeacherManagement', 
+        component: TeacherManagement,
+        meta: { title: '教师管理' }
+      },
+      { 
+        path: '/admin/admins', 
+        name: 'AdminManagement', 
+        component: AdminManagement,
+        meta: { title: '管理员管理' }
+      },
+      { 
+        path: '/admin/courses', 
+        name: 'CourseManagement', 
+        component: CourseManagement,
+        meta: { title: '课程管理' }
+      }
     ]
   },
   {
@@ -44,25 +69,14 @@ const routes = [
     name: 'TeacherDashboard',
     component: TeacherDashboard,
     children: [
-      {
-        path: '/teacher/profile',
-        name: 'TeacherProfile',
-        component: TeacherProfile
+      { 
+        path: '', // 默认子路由
+        name: 'TeacherHome',
+        component: () => import('@/views/teacher/TeacherHome.vue')
       },
-      {
-        path: '/teacher/courses',
-        name: 'TeacherCourses',
-        component: TeacherCourses
-      },
-      {
-        path: '/teacher/grades',
-        name: 'TeacherGrades',
-        component: TeacherGrades
-      },
-      {
-        path: '',
-        redirect: '/teacher/profile'
-      }
+      { path: '/teacher/profile', name: 'TeacherProfile', component: TeacherProfile },
+      { path: '/teacher/courses', name: 'TeacherCourses', component: TeacherCourses },
+      { path: '/teacher/grades', name: 'TeacherGrades', component: TeacherGrades }
     ]
   },
   {
@@ -70,25 +84,14 @@ const routes = [
     name: 'StudentDashboard',
     component: StudentDashboard,
     children: [
-      {
-        path: '/student/profile',
-        name: 'StudentProfile',
-        component: StudentProfile
+      { 
+        path: '', // 默认子路由
+        name: 'StudentHome',
+        component: () => import('@/views/student/StudentHome.vue')
       },
-      {
-        path: '/student/courses',
-        name: 'StudentCourses',
-        component: StudentCourses
-      },
-      {
-        path: '/student/grades',
-        name: 'StudentGrades',
-        component: StudentGrades
-      },
-      {
-        path: '',
-        redirect: '/student/profile'
-      }
+      { path: '/student/profile', name: 'StudentProfile', component: StudentProfile },
+      { path: '/student/courses', name: 'StudentCourses', component: StudentCourses },
+      { path: '/student/grades', name: 'StudentGrades', component: StudentGrades }
     ]
   },
 ];
@@ -116,5 +119,13 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
+
+// 添加路由导航错误处理
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => {
+    if (err.name !== 'NavigationDuplicated') throw err
+  })
+}
 
 export default router;

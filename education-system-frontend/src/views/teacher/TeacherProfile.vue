@@ -1,9 +1,10 @@
 <template>
   <div class="teacher-profile">
-    <el-card class="profile-card">
-      <div slot="header">
-        <span>个人信息</span>
+    <el-card class="glass-card">
+      <div slot="header" class="header">
+        <span class="title">个人信息</span>
       </div>
+      
       <el-form label-width="100px" class="profile-form">
         <el-form-item label="工号">
           <span>{{ profile.id }}</span>
@@ -26,11 +27,15 @@
       </el-form>
     </el-card>
 
-    <el-card class="courses-card">
-      <div slot="header">
-        <span>我的课程</span>
+    <el-card class="glass-card">
+      <div slot="header" class="header">
+        <span class="title">我的课程</span>
       </div>
-      <el-table :data="courses" border style="width: 100%">
+      <el-table 
+        :data="courses" 
+        border 
+        stripe
+        class="custom-table">
         <el-table-column prop="id" label="课程ID" width="100"></el-table-column>
         <el-table-column prop="name" label="课程名称"></el-table-column>
         <el-table-column prop="description" label="课程描述"></el-table-column>
@@ -84,17 +89,38 @@ export default {
 </script>
 
 <style scoped>
-.teacher-profile {
-  max-width: 1000px;
-  margin: 0 auto;
+.profile-container {
+  padding: 20px;
 }
+
 .profile-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 20px;
   margin-bottom: 20px;
 }
-.profile-form {
-  max-width: 600px;
+
+/* 修复表单标签颜色 */
+:deep(.el-form-item__label) {
+  color: #303133;  /* 浅色模式下的颜色 */
 }
-.el-form-item {
-  margin-bottom: 15px;
+
+/* 深色模式适配 */
+.dark-theme :deep(.el-form-item__label) {
+  color: var(--text-color) !important;
 }
+
+:deep(.el-input__inner) {
+  background-color: rgba(35, 35, 35, 0.8) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-color) !important;
+}
+
+:deep(.el-input__inner:hover),
+:deep(.el-input__inner:focus) {
+  border-color: #409EFF !important;
+}
+
+/* 其他深色模式样式... */
 </style> 

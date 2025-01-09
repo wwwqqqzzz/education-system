@@ -19,13 +19,18 @@ public interface AdminMapper {
     @Select("SELECT * FROM admin WHERE id = #{id}")
     Admin findAdminById(int id);
 
-    @Select("SELECT * FROM admin")
+    @Select("SELECT id, username, password, name, phone, email, " +
+            "created_at as createdAt, role_id as roleId " +
+            "FROM admin")
     List<Admin> findAllAdmins();
 
-    @Insert("INSERT INTO admin (username, password, name, phone, email) VALUES (#{username}, #{password}, #{name}, #{phone}, #{email})")
+    @Insert("INSERT INTO admin (username, password, name, phone, email, role_id) " +
+            "VALUES (#{username}, #{password}, #{name}, #{phone}, #{email}, #{roleId})")
     int insertAdmin(Admin admin);
 
-    @Update("UPDATE admin SET username = #{username}, password = #{password}, name = #{name}, phone = #{phone}, email = #{email} WHERE id = #{id}")
+    @Update("UPDATE admin SET username = #{username}, name = #{name}, " +
+            "phone = #{phone}, email = #{email}, role_id = #{roleId} " +
+            "WHERE id = #{id}")
     int updateAdmin(Admin admin);
 
     @Delete("DELETE FROM admin WHERE id = #{id}")

@@ -12,12 +12,13 @@ import java.util.Date;
 
 @Data
 public class Teacher {
-    private int id;
+    private Integer id;
     private String username;
     private String password;
     private String name;
     private String phone;
     private String email;
-    private Date hiredate;
     private String department;
+    private Date hireDate;
+    private Date createdAt;
 }

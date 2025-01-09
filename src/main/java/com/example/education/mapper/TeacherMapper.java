@@ -10,16 +10,21 @@ import java.util.Map;
 @Mapper
 public interface TeacherMapper {
 
-    @Select("SELECT * FROM teacher")
+    @Select("SELECT id, username, password, name, phone, email, " +
+            "department, hireDate, created_at as createdAt " +
+            "FROM teacher")
     List<Teacher> findAll();
 
     @Select("SELECT * FROM teacher WHERE id = #{id}")
     Teacher findById(@Param("id") int id);
 
-    @Insert("INSERT INTO teacher (username, password, name, email, phone) VALUES (#{username}, #{password}, #{name}, #{email}, #{phone})")
+    @Insert("INSERT INTO teacher (username, password, name, phone, email, department, hireDate) " +
+            "VALUES (#{username}, #{password}, #{name}, #{phone}, #{email}, #{department}, #{hireDate})")
     int insert(Teacher teacher);
 
-    @Update("UPDATE teacher SET name = #{name}, email = #{email}, phone = #{phone} WHERE id = #{id}")
+    @Update("UPDATE teacher SET password = #{password}, name = #{name}, email = #{email}, " +
+            "phone = #{phone}, department = #{department}, hireDate = #{hireDate} " +
+            "WHERE id = #{id}")
     int update(Teacher teacher);
 
     @Delete("DELETE FROM teacher WHERE id = #{id}")
@@ -31,7 +36,10 @@ public interface TeacherMapper {
     @Select("SELECT COUNT(*) FROM teacher WHERE username = #{username} AND password = #{password}")
     int validateLogin(@Param("username") String username, @Param("password") String password);
 
-    @Select("SELECT * FROM course WHERE teacher_id = #{teacherId}")
+    @Select("SELECT c.id, c.name, c.description, c.teacher_id as teacherId, " +
+            "c.created_at as createdAt " +
+            "FROM course c " +
+            "WHERE c.teacher_id = #{teacherId}")
     List<Course> findCoursesByTeacherId(Integer teacherId);
 
     @Select("SELECT DISTINCT " +
@@ -62,4 +70,24 @@ public interface TeacherMapper {
 
     @Select("SELECT COUNT(*) FROM enrollment WHERE course_id = #{courseId}")
     int getStudentCount(@Param("courseId") Integer courseId);
+
+    @Insert("INSERT INTO course (name, description, teacher_id) " +
+            "VALUES (#{name}, #{description}, #{teacherId})")
+    @Options(useGeneratedKeys = true, keyProperty = "id")
+    int insertCourse(Course course);
+
+    @Delete("DELETE FROM enrollment WHERE course_id = #{courseId} AND student_id = #{studentId}")
+    int deleteEnrollment(@Param("courseId") Integer courseId, @Param("studentId") Integer studentId);
+
+    @Insert("INSERT INTO enrollment (course_id, student_id) VALUES (#{courseId}, #{studentId})")
+    int insertEnrollment(@Param("courseId") Integer courseId, @Param("studentId") Integer studentId);
+
+    @Select("SELECT * FROM course WHERE id = #{courseId}")
+    Course findCourseById(@Param("courseId") Integer courseId);
+
+    @Delete("DELETE FROM course WHERE id = #{courseId}")
+    int deleteCourse(@Param("courseId") Integer courseId);
+
+    @Update("UPDATE teacher SET password = #{password} WHERE id = #{id}")
+    int updatePassword(Teacher teacher);
 }

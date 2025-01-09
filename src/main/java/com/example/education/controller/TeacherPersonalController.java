@@ -18,7 +18,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/teacher")
-@CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:8080", 
+             allowCredentials = "true",
+             allowedHeaders = "*",
+             methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, 
+                       RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class TeacherPersonalController {
     private final TeacherService teacherService;
 
@@ -28,9 +32,10 @@ public class TeacherPersonalController {
 
     // 教师登录
     @PostMapping("/login")
-    public Map<String, Object> login(HttpSession session,
-                                     @RequestParam String username,
-                                     @RequestParam String password) {
+    public Map<String, Object> login(@RequestBody Map<String, String> loginInfo, HttpSession session) {
+        String username = loginInfo.get("username");
+        String password = loginInfo.get("password");
+        
         boolean isValid = teacherService.validateTeacherLogin(username, password);
         Map<String, Object> response = new HashMap<>();
         if (isValid) {
@@ -38,8 +43,10 @@ public class TeacherPersonalController {
             session.setAttribute("userId", teacher.getId());
             session.setAttribute("username", username);
             session.setAttribute("role", Role.TEACHER);
+            response.put("success", true);
             response.put("message", "Login successful!");
         } else {
+            response.put("success", false);
             response.put("message", "Invalid username or password.");
         }
         return response;
@@ -87,4 +94,69 @@ public class TeacherPersonalController {
     public Integer getStudentCount(@PathVariable Integer courseId) {
         return teacherService.getStudentCount(courseId);
     }
+
+    // 结课（删除课程）
+    @DeleteMapping("/courses/{courseId}")
+    public String deleteCourse(@PathVariable Integer courseId, HttpSession session) {
+        Integer teacherId = (Integer) session.getAttribute("userId");
+        if (teacherId == null) {
+            throw new RuntimeException("Please log in first.");
+        }
+        // 验证课程是否属于该教师
+        Course course = teacherService.getCourseById(courseId);
+        if (course == null || !course.getTeacherId().equals(teacherId)) {
+            return "No permission to delete this course.";
+        }
+        return teacherService.deleteCourseById(courseId) ? 
+               "Course deleted successfully!" : 
+               "Failed to delete course.";
+    }
+
+    // 添加选课学生
+    @PostMapping("/courses/{courseId}/enroll")
+    public String enrollStudent(@PathVariable Integer courseId, 
+                              @RequestBody Map<String, Integer> studentInfo,
+                              HttpSession session) {
+        Integer teacherId = (Integer) session.getAttribute("userId");
+        if (teacherId == null) {
+            throw new RuntimeException("Please log in first.");
+        }
+        Integer studentId = studentInfo.get("studentId");
+        return teacherService.enrollStudent(courseId, studentId) ? 
+               "Student enrolled successfully!" : 
+               "Failed to enroll student.";
+    }
+
+    // 移除选课学生
+    @DeleteMapping("/courses/{courseId}/students/{studentId}")
+    public String removeStudent(@PathVariable Integer courseId, 
+                              @PathVariable Integer studentId,
+                              HttpSession session) {
+        Integer teacherId = (Integer) session.getAttribute("userId");
+        if (teacherId == null) {
+            throw new RuntimeException("Please log in first.");
+        }
+        return teacherService.removeStudentFromCourse(courseId, studentId) ? 
+               "Student removed successfully!" : 
+               "Failed to remove student.";
+    }
+
+    // 添加课程
+    @PostMapping("/courses")
+    public String createCourse(@RequestBody Course course, HttpSession session) {
+        Integer teacherId = (Integer) session.getAttribute("userId");
+        if (teacherId == null) {
+            throw new RuntimeException("Please log in first.");
+        }
+        
+        // 设置当前教师为课程教师
+        course.setTeacherId(teacherId);
+        
+        // 调用服务层创建课程
+        return teacherService.createCourse(course) ? 
+               "Course created successfully!" : 
+               "Failed to create course.";
+    }
+
+    
 }

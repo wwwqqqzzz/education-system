@@ -1,0 +1,105 @@
+@startuml Education System ER Diagram
+
+!define table(x) class x << (T,#FFAAAA) >>
+!define primary_key(x) <u>x</u>
+!define foreign_key(x) #x#
+
+' 实体定义
+table(Student) {
+    primary_key(id): INT
+    username: VARCHAR(50)
+    password: VARCHAR(100)
+    name: VARCHAR(50)
+    phone: VARCHAR(20)
+    email: VARCHAR(100)
+    enrollment_year: VARCHAR(4)
+    major: VARCHAR(50)
+    created_at: TIMESTAMP
+}
+
+table(Teacher) {
+    primary_key(id): INT
+    username: VARCHAR(50)
+    password: VARCHAR(100)
+    name: VARCHAR(50)
+    phone: VARCHAR(20)
+    email: VARCHAR(100)
+    department: VARCHAR(50)
+    hireDate: DATE
+    created_at: TIMESTAMP
+}
+
+table(Admin) {
+    primary_key(id): INT
+    username: VARCHAR(50)
+    password: VARCHAR(100)
+    name: VARCHAR(50)
+    email: VARCHAR(100)
+    created_at: TIMESTAMP
+}
+
+table(Course) {
+    primary_key(id): INT
+    name: VARCHAR(100)
+    description: TEXT
+    foreign_key(teacher_id): INT
+    credit: INT
+    capacity: INT
+    schedule: VARCHAR(100)
+    location: VARCHAR(100)
+    status: VARCHAR(20)
+    created_at: TIMESTAMP
+}
+
+table(Enrollment) {
+    primary_key(id): INT
+    foreign_key(student_id): INT
+    foreign_key(course_id): INT
+    status: VARCHAR(20)
+    created_at: TIMESTAMP
+}
+
+table(Grade) {
+    primary_key(id): INT
+    foreign_key(student_id): INT
+    foreign_key(course_id): INT
+    grade: DECIMAL(5,2)
+    comment: TEXT
+    created_at: TIMESTAMP
+    updated_at: TIMESTAMP
+}
+
+' 关系定义
+Teacher "1" -- "0..*" Course : teaches >
+Student "1" -- "0..*" Enrollment : enrolls >
+Course "1" -- "0..*" Enrollment : contains >
+Student "1" -- "0..*" Grade : receives >
+Course "1" -- "0..*" Grade : has >
+
+' 注释
+note bottom of Student
+  学生可以选修多门课程
+  每门课程都会有对应的成绩
+end note
+
+note bottom of Teacher
+  教师可以教授多门课程
+  负责录入学生成绩
+end note
+
+note bottom of Course
+  课程由教师开设
+  包含基本信息和教学安排
+end note
+
+note bottom of Grade
+  记录学生在每门课程中的成绩
+  包含评语和时间戳
+end note
+
+note bottom of Enrollment
+  记录学生选课信息
+  包含选课状态和时间
+end note
+
+@enduml 

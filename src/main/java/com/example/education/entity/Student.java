@@ -7,6 +7,8 @@ package com.example.education.entity;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class Student {
     private Integer id;
@@ -15,6 +17,8 @@ public class Student {
     private String name;
     private String phone;
     private String email;
-    private Integer enrollmentYear;
+    private String enrollment_year;
     private String major;
+    private Date createdAt;
+
 }

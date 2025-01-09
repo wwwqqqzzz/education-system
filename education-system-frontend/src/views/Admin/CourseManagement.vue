@@ -1,29 +1,80 @@
 <template>
   <div class="course-management">
     <div class="operation-bar">
-      <el-button type="primary" @click="handleAdd">添加课程</el-button>
+      <el-button type="primary" icon="el-icon-plus" @click="handleAdd">添加课程</el-button>
     </div>
-    
-    <el-table :data="courses" border style="width: 100%">
-      <el-table-column prop="id" label="课程ID" width="80"></el-table-column>
-      <el-table-column prop="name" label="课程名称" width="180"></el-table-column>
-      <el-table-column prop="description" label="课程描述"></el-table-column>
-      <el-table-column label="任课教师" width="120">
+
+    <el-table
+      :data="courses"
+      border
+      stripe
+      fit
+      style="width: 100%"
+      v-loading="loading">
+      <el-table-column
+        prop="id"
+        label="课程ID"
+        min-width="80"
+        fixed
+        align="center">
+      </el-table-column>
+
+      <el-table-column
+        prop="name"
+        label="课程名称"
+        min-width="120"
+        align="center">
+      </el-table-column>
+
+      <el-table-column
+        prop="description"
+        label="课程描述"
+        min-width="200"
+        align="center"
+        show-overflow-tooltip>
+      </el-table-column>
+
+      <el-table-column
+        label="任课教师"
+        min-width="120"
+        align="center">
         <template slot-scope="scope">
-          {{ getTeacherName(scope.row.teacher_id) }}
+          {{ scope.row.teacherName || '未分配' }}
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="200" fixed="right">
+
+      <el-table-column
+        label="操作"
+        min-width="150"
+        fixed="right"
+        align="center">
         <template slot-scope="scope">
-          <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+          <div class="table-operations">
+            <el-button
+              size="mini"
+              type="primary"
+              icon="el-icon-edit"
+              @click="handleEdit(scope.row)">
+              编辑
+            </el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+              @click="handleDelete(scope.row)">
+              删除
+            </el-button>
+          </div>
         </template>
       </el-table-column>
     </el-table>
 
-    <!-- 添加/编辑课程对话框 -->
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible">
-      <el-form :model="form" :rules="rules" ref="form" label-width="100px">
+    <!-- 添加/编辑对话框 -->
+    <el-dialog
+      :title="isEdit ? '编辑课程' : '添加课程'"
+      :visible.sync="dialogVisible"
+      width="50%">
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="课程名称" prop="name">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
@@ -31,8 +82,8 @@
           <el-input type="textarea" v-model="form.description"></el-input>
         </el-form-item>
         <el-form-item label="任课教师" prop="teacher_id">
-          <el-select 
-            v-model="form.teacher_id" 
+          <el-select
+            v-model="form.teacher_id"
             placeholder="请选择教师"
             @change="handleTeacherSelect">
             <el-option
@@ -45,8 +96,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitForm">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -100,7 +151,7 @@ export default {
       try {
         const response = await axios.get('/admin/teachers');
         this.teachers = response.data;
-        console.log('获取到的教师列表:', this.teachers);
+        console.log('获取的教师列表:', this.teachers);
       } catch (error) {
         console.error('获取教师列表失败:', error);
         this.$message.error('获取教师列表失败');
@@ -183,6 +234,25 @@ export default {
     handleTeacherSelect(value) {
       console.log('选择的教师ID:', value);
       this.form.teacher_id = parseInt(value);
+    },
+    formatDate(dateStr) {
+      if (!dateStr) return '暂无数据';
+      try {
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) {
+          return '无效日期';
+        }
+        return date.toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
+      } catch (error) {
+        return '无效日期';
+      }
     }
   }
 };
@@ -192,7 +262,12 @@ export default {
 .course-management {
   padding: 20px;
 }
+
 .operation-bar {
   margin-bottom: 20px;
 }
-</style> 
+
+.dialog-footer {
+  text-align: right;
+}
+</style>

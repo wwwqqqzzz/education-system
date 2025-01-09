@@ -1,37 +1,109 @@
 <template>
   <div class="student-management">
     <div class="operation-bar">
-      <el-button type="primary" @click="handleAdd">添加学生</el-button>
+      <el-button type="primary" icon="el-icon-plus" @click="handleAdd">添加学生</el-button>
     </div>
-    
-    <el-table :data="students" border style="width: 100%">
-      <el-table-column prop="id" label="学号" width="80"></el-table-column>
-      <el-table-column prop="username" label="用户名" width="120"></el-table-column>
-      <el-table-column prop="name" label="姓名" width="120"></el-table-column>
-      <el-table-column prop="phone" label="电话" width="120"></el-table-column>
-      <el-table-column prop="email" label="邮箱"></el-table-column>
-      <el-table-column label="入学年份" width="120">
+
+    <el-table
+      :data="students"
+      border
+      stripe
+      fit
+      style="width: 100%"
+      v-loading="loading">
+      <el-table-column
+        prop="id"
+        label="学生ID"
+        min-width="80"
+        fixed
+        align="center">
+      </el-table-column>
+
+      <el-table-column
+        prop="username"
+        label="用户名"
+        min-width="120"
+        align="center">
+      </el-table-column>
+
+      <el-table-column
+        prop="name"
+        label="姓名"
+        min-width="100"
+        align="center">
+      </el-table-column>
+
+      <el-table-column
+        prop="phone"
+        label="电话"
+        min-width="120"
+        align="center">
+      </el-table-column>
+
+      <el-table-column
+        prop="email"
+        label="邮箱"
+        min-width="200"
+        align="center"
+        show-overflow-tooltip>
+      </el-table-column>
+
+      <el-table-column
+        prop="enrollmentYear"
+        label="入学年份"
+        min-width="100"
+        align="center">
+      </el-table-column>
+
+      <el-table-column
+        prop="major"
+        label="专业"
+        min-width="150"
+        align="center"
+        show-overflow-tooltip>
+      </el-table-column>
+
+      <el-table-column
+        label="创建时间"
+        min-width="180"
+        align="center">
         <template slot-scope="scope">
-          {{ scope.row.enrollmentYear || scope.row.enrollment_year }}
+          {{ formatDate(scope.row.createdAt) }}
         </template>
       </el-table-column>
-      <el-table-column prop="major" label="专业" width="120"></el-table-column>
-      <el-table-column label="创建时间" width="180">
+
+      <el-table-column
+        label="操作"
+        min-width="150"
+        fixed="right"
+        align="center">
         <template slot-scope="scope">
-          {{ new Date(scope.row.created_at).toLocaleString() }}
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="200" fixed="right">
-        <template slot-scope="scope">
-          <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+          <div class="table-operations">
+            <el-button
+              size="mini"
+              type="primary"
+              icon="el-icon-edit"
+              @click="handleEdit(scope.row)">
+              编辑
+            </el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+              @click="handleDelete(scope.row)">
+              删除
+            </el-button>
+          </div>
         </template>
       </el-table-column>
     </el-table>
 
-    <!-- 添加/编辑学生对话框 -->
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible">
-      <el-form :model="form" :rules="rules" ref="form" label-width="100px">
+    <!-- 添加/编辑对话框 -->
+    <el-dialog
+      :title="isEdit ? '编辑学生' : '添加学生'"
+      :visible.sync="dialogVisible"
+      width="50%">
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="用户名" prop="username">
           <el-input v-model="form.username" :disabled="isEdit"></el-input>
         </el-form-item>
@@ -61,8 +133,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitForm">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -122,14 +194,13 @@ export default {
   methods: {
     async fetchStudents() {
       try {
-        const response = await request.get('/admin/students')
-        this.students = response.data.map(student => ({
-          ...student,
-          enrollmentYear: student.enrollment_year
-        }));
+        const response = await request.get('/admin/students');
+        console.log('原始学生数据:', response.data);
+        this.students = response.data;
+        console.log('处理后的学生数据:', this.students);
       } catch (error) {
-        console.error('获取学生列表失败:', error)
-        this.$message.error('获取学生列表失败')
+        console.error('获取学生列表失败:', error);
+        this.$message.error('获取学生列表失败');
       }
     },
     handleAdd() {
@@ -153,7 +224,7 @@ export default {
       this.form = {
         username: row.username,
         name: row.name,
-        enrollmentYear: row.enrollment_year ? row.enrollment_year.toString() : '',
+        enrollmentYear: row.enrollmentYear ? row.enrollmentYear.toString() : '',
         major: row.major,
         phone: row.phone,
         email: row.email
@@ -182,19 +253,11 @@ export default {
           try {
             const formData = {
               ...this.form,
-              enrollmentYear: parseInt(this.form.enrollmentYear)
+              enrollment_year: this.form.enrollmentYear
             };
-            
+
             if (this.isEdit) {
-              const updateData = {
-                username: formData.username,
-                name: formData.name,
-                enrollmentYear: formData.enrollmentYear,
-                major: formData.major,
-                phone: formData.phone,
-                email: formData.email
-              };
-              await request.put(`/admin/students/${this.currentId}`, updateData);
+              await request.put(`/admin/students/${this.currentId}`, formData);
               this.$message.success('更新成功');
             } else {
               await request.post('/admin/students', formData);
@@ -203,51 +266,99 @@ export default {
             this.dialogVisible = false;
             this.fetchStudents();
           } catch (error) {
+            console.error('提交失败:', error);
             this.$message.error(this.isEdit ? '更新失败' : '添加失败');
           }
         }
       });
+    },
+    formatDate(dateStr) {
+      if (!dateStr) return '暂无数据';
+      try {
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) {
+          return '无效日期';
+        }
+        return date.toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
+      } catch (error) {
+        return '无效日期';
+      }
     }
   }
 };
 </script>
 
 <style scoped>
-.student-management {
+.management-container {
   padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
 }
+
 .operation-bar {
   margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .el-table {
   margin-top: 20px;
-}
-
-/* 美化表格样式 */
-:deep(.el-table) {
-  border-radius: 4px;
+  border-radius: 8px;
   overflow: hidden;
+  table-layout: fixed !important;
 }
 
-:deep(.el-table th) {
-  background-color: #f5f7fa;
-  color: #606266;
-  font-weight: 500;
-  text-align: center;
+.el-table__body {
+  width: 100% !important;
 }
 
-:deep(.el-table td) {
-  padding: 8px 0;
-  text-align: center;
+.el-table__header {
+  width: 100% !important;
 }
 
-:deep(.el-button--mini) {
-  padding: 6px 12px;
+.el-table .cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* 确保操作列的按钮对齐 */
-.el-button + .el-button {
-  margin-left: 8px;
+.el-button {
+  border-radius: 6px;
+  padding: 8px 16px;
+
+  &--mini {
+    padding: 6px 12px;
+  }
 }
-</style> 
+
+.el-dialog {
+  border-radius: 8px;
+
+  .el-dialog__header {
+    padding: 20px;
+    border-bottom: 1px solid #e4e7ed;
+  }
+
+  .el-dialog__body {
+    padding: 30px 20px;
+  }
+
+  .el-dialog__footer {
+    padding: 20px;
+    border-top: 1px solid #e4e7ed;
+  }
+}
+
+.el-form-item {
+  margin-bottom: 22px;
+}
+</style>

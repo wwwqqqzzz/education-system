@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
@@ -27,7 +29,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, String> loginData) {
+    public Map<String, Object> login(@RequestBody Map<String, String> loginData, HttpSession session) {
         String username = loginData.get("username");
         String password = loginData.get("password");
         String role = loginData.get("role");
@@ -37,18 +39,27 @@ public class LoginController {
         switch (role) {
             case "admin":
                 if (adminService.validateAdminLogin(username, password)) {
+                    Admin admin = adminService.getAdminByUsername(username);
+                    session.setAttribute("userId", admin.getId());
+                    session.setAttribute("role", "admin");
                     response.put("message", "Login successful!");
                     response.put("role", "admin");
                 }
                 break;
             case "teacher":
                 if (teacherService.validateTeacherLogin(username, password)) {
+                    Teacher teacher = teacherService.getTeacherByUsername(username);
+                    session.setAttribute("userId", teacher.getId());
+                    session.setAttribute("role", "teacher");
                     response.put("message", "Login successful!");
                     response.put("role", "teacher");
                 }
                 break;
             case "student":
                 if (studentService.validateStudentLogin(username, password)) {
+                    Student student = studentService.getStudentByUsername(username);
+                    session.setAttribute("userId", student.getId());
+                    session.setAttribute("role", "student");
                     response.put("message", "Login successful!");
                     response.put("role", "student");
                 }

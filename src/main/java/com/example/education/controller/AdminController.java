@@ -42,18 +42,21 @@ public class AdminController {
 
     // 管理员登录
     @PostMapping("/login")
-    public Map<String, Object> login(HttpSession session,
-                                   @RequestParam String username,
-                                   @RequestParam String password) {
+    public Map<String, Object> login(@RequestBody Map<String, String> loginInfo, HttpSession session) {
+        String username = loginInfo.get("username");
+        String password = loginInfo.get("password");
+        
         boolean isValid = adminService.validateAdminLogin(username, password);
         Map<String, Object> response = new HashMap<>();
         if (isValid) {
             Admin admin = adminService.getAdminByUsername(username);
             session.setAttribute("userId", admin.getId());
+            session.setAttribute("username", username);
             session.setAttribute("role", Role.ADMIN);
+            response.put("success", true);
             response.put("message", "Login successful!");
-            response.put("token", session.getId());  // 返回sessionId作为token
         } else {
+            response.put("success", false);
             response.put("message", "Invalid username or password.");
         }
         return response;
@@ -121,7 +124,12 @@ public class AdminController {
     // 学生管理
     @GetMapping("/students")
     public List<Student> getAllStudents() {
-        return studentService.getAllStudents();
+        List<Student> students = studentService.getAllStudents();
+        // 添加调试日志
+        students.forEach(student -> {
+            System.out.println("返回的学生数据: " + student);
+        });
+        return students;
     }
 
     @GetMapping("/students/{id}")
@@ -131,11 +139,13 @@ public class AdminController {
 
     @PostMapping("/students")
     public String addStudent(@RequestBody Student student) {
+        System.out.println("接收到的学生数据: " + student);  // 添加日志
         return studentService.addStudent(student) ? "Student added successfully!" : "Failed to add student.";
     }
 
     @PutMapping("/students/{id}")
     public String updateStudent(@PathVariable int id, @RequestBody Student student) {
+        System.out.println("更新的学生数据: " + student);  // 添加日志
         Student existingStudent = studentService.getStudentById(id);
         if (existingStudent != null) {
             student.setId(id);

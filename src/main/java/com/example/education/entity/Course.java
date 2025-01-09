@@ -16,4 +16,5 @@ public class Course {
     private String description;
     private Integer teacherId;
     private LocalDateTime createdAt;
+    private String teacherName;
 }

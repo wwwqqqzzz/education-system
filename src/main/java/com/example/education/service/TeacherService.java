@@ -82,5 +82,34 @@ public class TeacherService {
     public int getStudentCount(Integer courseId) {
         return teacherMapper.getStudentCount(courseId);
     }
+
+    public Course getCourseById(Integer courseId) {
+        return teacherMapper.findCourseById(courseId);
+    }
+
+    public boolean deleteCourseById(Integer courseId) {
+        return teacherMapper.deleteCourse(courseId) > 0;
+    }
+
+    public boolean enrollStudent(Integer courseId, Integer studentId) {
+        // 检查是否已经选课
+        if (teacherMapper.checkEnrollment(courseId, studentId) > 0) {
+            return false;
+        }
+        return teacherMapper.insertEnrollment(courseId, studentId) > 0;
+    }
+
+    public boolean removeStudentFromCourse(Integer courseId, Integer studentId) {
+        return teacherMapper.deleteEnrollment(courseId, studentId) > 0;
+    }
+
+    public boolean createCourse(Course course) {
+        try {
+            return teacherMapper.insertCourse(course) > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
 

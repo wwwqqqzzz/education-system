@@ -8,20 +8,24 @@ import java.util.Map;
 
 @Mapper
 public interface StudentMapper {
-    @Select("SELECT * FROM student")
+    @Select("SELECT id, username, password, name, phone, email, " +
+            "enrollment_year, " +
+            "major, " +
+            "created_at as createdAt " +
+            "FROM student")
     List<Student> findAll();
 
     @Select("SELECT * FROM student WHERE id = #{id}")
     Student findById(@Param("id") int id);
 
     @Insert("INSERT INTO student (username, password, name, phone, email, enrollment_year, major) " +
-            "VALUES (#{username}, #{password}, #{name}, #{phone}, #{email}, #{enrollmentYear}, #{major})")
+            "VALUES (#{username}, #{password}, #{name}, #{phone}, #{email}, #{enrollment_year}, #{major})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Student student);
 
-    @Update("UPDATE student SET username = #{username}, name = #{name}, " +
-            "phone = #{phone}, email = #{email}, enrollment_year = #{enrollmentYear}, " +
-            "major = #{major} WHERE id = #{id}")
+    @Update("UPDATE student SET password = #{password}, name = #{name}, email = #{email}, " +
+            "phone = #{phone}, major = #{major}, enrollment_year = #{enrollment_year} " +
+            "WHERE id = #{id}")
     int update(Student student);
 
     @Delete("DELETE FROM student WHERE id = #{id}")
@@ -60,4 +64,34 @@ public interface StudentMapper {
 
     @Delete("DELETE FROM enrollment WHERE student_id = #{studentId} AND course_id = #{courseId}")
     int deleteEnrollment(@Param("studentId") Integer studentId, @Param("courseId") Integer courseId);
+
+    @Select("SELECT COUNT(*) FROM enrollment WHERE student_id = #{studentId}")
+    int countCurrentCourses(Integer studentId);
+
+    @Select("SELECT AVG(grade) FROM grade WHERE student_id = #{studentId}")
+    Double calculateAverageGrade(Integer studentId);
+
+    @Select("SELECT SUM(c.credit) FROM enrollment e " +
+            "JOIN course c ON e.course_id = c.id " +
+            "WHERE e.student_id = #{studentId} AND EXISTS (" +
+            "   SELECT 1 FROM grade g " +
+            "   WHERE g.student_id = e.student_id " +
+            "   AND g.course_id = e.course_id " +
+            "   AND g.grade >= 60" +
+            ")")
+    Integer calculateTotalCredits(Integer studentId);
+
+    @Select("SELECT c.name as name, t.name as teacher, " +
+            "c.schedule as time, c.location, c.credit as credits " +
+            "FROM enrollment e " +
+            "JOIN course c ON e.course_id = c.id " +
+            "JOIN teacher t ON c.teacher_id = t.id " +
+            "WHERE e.student_id = #{studentId} " +
+            "ORDER BY e.created_at DESC LIMIT 3")
+    List<Map<String, Object>> findRecentCourses(Integer studentId);
+
+    @Update("UPDATE student SET password = #{password} WHERE id = #{id}")
+    int updatePassword(Student student);
+
+    
 }

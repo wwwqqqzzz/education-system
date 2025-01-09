@@ -26,13 +26,20 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(roleInterceptor)
                 .addPathPatterns("/admin/**", "/teacher/**", "/student/**")
-                .excludePathPatterns("/admin/login", "/teacher/login", "/student/login", "/error");
+                .excludePathPatterns(
+                    "/admin/login", 
+                    "/teacher/login", 
+                    "/student/login",
+                    "/auth/reset-password",   // 修改这里的路径
+                    "/auth/register",         // 也添加注册路径
+                    "/error"
+                );
     }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:8081")
+                .allowedOrigins("http://localhost:8080")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)

@@ -17,6 +17,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/student")
+@CrossOrigin(origins = "http://localhost:8080", 
+             allowCredentials = "true",
+             allowedHeaders = "*",
+             methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, 
+                       RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class StudentPersonalController {
     private final StudentService studentService;
 
@@ -26,17 +31,28 @@ public class StudentPersonalController {
 
     // 学生登录
     @PostMapping("/login")
-    public Map<String, Object> login(HttpSession session,
-                                     @RequestParam String username,
-                                     @RequestParam String password) {
+    public Map<String, Object> login(@RequestBody Map<String, String> loginInfo, HttpSession session) {
+        String username = loginInfo.get("username");
+        String password = loginInfo.get("password");
+        
+        System.out.println("尝试登录: username=" + username + ", password=" + password);  // 添加日志
+        
         boolean isValid = studentService.validateStudentLogin(username, password);
         Map<String, Object> response = new HashMap<>();
+        
+        System.out.println("登录验证结果: " + isValid);  // 添加日志
+        
         if (isValid) {
             Student student = studentService.getStudentByUsername(username);
+            System.out.println("获取到的学生信息: " + student);  // 添加日志
+            
             session.setAttribute("userId", student.getId());
+            session.setAttribute("username", username);
             session.setAttribute("role", Role.STUDENT);
+            response.put("success", true);
             response.put("message", "Login successful!");
         } else {
+            response.put("success", false);
             response.put("message", "Invalid username or password.");
         }
         return response;
@@ -93,4 +109,6 @@ public class StudentPersonalController {
         return studentService.dropCourse(studentId, courseId) ? 
                "Course dropped successfully!" : "Failed to drop course.";
     }
+
+    
 }

@@ -1,15 +1,22 @@
 import Vue from 'vue'
 import App from './App.vue'
+import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import router from './router'
 import axios from 'axios'
 import store from './store'
 
+// 先引入 element-ui 的样式
+import './styles/element-ui.css'
+// 再引入表格样式，确保能覆盖默认样式
+import './styles/table.css'
+import './styles/dark-theme.css'  // 添加深色主题样式
+
 Vue.config.productionTip = false
 
-// 使用 ElementUI
-Vue.use(ElementUI, { size: 'medium' })
+Vue.use(ElementUI, {
+  size: 'medium'
+})
 
 // 配置 axios
 axios.defaults.baseURL = 'http://localhost:9099'

@@ -1,33 +1,87 @@
 <template>
   <div class="admin-management">
     <div class="operation-bar">
-      <el-button type="primary" @click="handleAdd">添加管理员</el-button>
+      <el-button type="primary" icon="el-icon-plus" @click="handleAdd">添加管理员</el-button>
     </div>
-    
-    <el-table :data="admins" border style="width: 100%">
-      <el-table-column prop="id" label="ID" width="80"></el-table-column>
-      <el-table-column prop="username" label="用户名" width="120"></el-table-column>
-      <el-table-column prop="name" label="姓名" width="120"></el-table-column>
-      <el-table-column prop="phone" label="电话" width="120"></el-table-column>
-      <el-table-column prop="email" label="邮箱"></el-table-column>
-      <el-table-column prop="created_at" label="创建时间" width="180">
-        <template slot-scope="scope">
-          {{ new Date(scope.row.created_at).toLocaleString() }}
-        </template>
+
+    <el-table
+      :data="admins"
+      border
+      stripe
+      fit
+      style="width: 100%"
+      v-loading="loading">
+      <el-table-column
+        prop="id"
+        label="管理员ID"
+        min-width="80"
+        fixed
+        align="center">
       </el-table-column>
-      <el-table-column label="操作" width="200">
+
+      <el-table-column
+        prop="username"
+        label="用户名"
+        min-width="120"
+        align="center">
+      </el-table-column>
+
+      <el-table-column
+        prop="name"
+        label="姓名"
+        min-width="100"
+        align="center">
+      </el-table-column>
+
+      <el-table-column
+        prop="phone"
+        label="电话"
+        min-width="120"
+        align="center">
+      </el-table-column>
+
+      <el-table-column
+        prop="email"
+        label="邮箱"
+        min-width="200"
+        align="center"
+        show-overflow-tooltip>
+      </el-table-column>
+
+      <el-table-column
+        label="操作"
+        min-width="150"
+        fixed="right"
+        align="center">
         <template slot-scope="scope">
-          <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+          <div class="table-operations">
+            <el-button
+              size="mini"
+              type="primary"
+              icon="el-icon-edit"
+              @click="handleEdit(scope.row)">
+              编辑
+            </el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+              @click="handleDelete(scope.row)">
+              删除
+            </el-button>
+          </div>
         </template>
       </el-table-column>
     </el-table>
 
-    <!-- 添加/编辑管理员对话框 -->
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible">
-      <el-form :model="form" :rules="rules" ref="form" label-width="80px">
+    <!-- 添加/编辑对话框 -->
+    <el-dialog
+      :title="isEdit ? '编辑管理员' : '添加管理员'"
+      :visible.sync="dialogVisible"
+      width="50%">
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" :disabled="isEdit"></el-input>
+          <el-input v-model="form.username"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password" v-if="!isEdit">
           <el-input v-model="form.password" type="password"></el-input>
@@ -43,8 +97,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitForm">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -89,7 +143,7 @@ api.interceptors.response.use(response => {
         this.$message.error(error.response.data.message || '请求失败');
     }
   } else {
-    this.$message.error('网络错误，请稍后重试');
+    this.$message.error('网络错误请稍后重试');
   }
   return Promise.reject(error);
 });
@@ -100,7 +154,7 @@ export default {
     return {
       admins: [],
       dialogVisible: false,
-      dialogTitle: '添加管理员',
+      dialogTitle: '增加管理员',
       form: {
         username: '',
         password: '',
@@ -135,8 +189,17 @@ export default {
     async fetchAdmins() {
       try {
         const response = await api.get('/admin/admins');
+        console.log('原始管理员数据:', response.data);
         if (response.data && Array.isArray(response.data)) {
-          this.admins = response.data;
+          this.admins = response.data.map(admin => ({
+            id: admin.id,
+            username: admin.username,
+            name: admin.name,
+            phone: admin.phone,
+            email: admin.email,
+            createdAt: admin.createdAt,
+            roleId: admin.roleId
+          }));
         } else {
           this.$message.error('获取数据失败：数据格式错误');
         }
@@ -195,27 +258,46 @@ export default {
                 username: this.form.username,
                 name: this.form.name,
                 phone: this.form.phone,
-                email: this.form.email
+                email: this.form.email,
+                roleId: 1  // 默认角色ID
               };
               await api.put(`/admin/admins/${this.currentId}`, updateData);
               this.$message.success('更新成功');
-              this.dialogVisible = false;
-              this.fetchAdmins();
             } else {
-              await api.post('/admin/admins', this.form);
+              const formData = {
+                ...this.form,
+                roleId: 1  // 默认角色ID
+              };
+              await api.post('/admin/admins', formData);
               this.$message.success('添加成功');
-              this.dialogVisible = false;
-              this.fetchAdmins();
             }
+            this.dialogVisible = false;
+            this.fetchAdmins();
           } catch (error) {
-            console.error('提交表单失败:', error.response?.data || error.message);
-            this.$message.error(this.isEdit ? 
-              '更新失败: ' + (error.response?.data?.message || error.message) : 
-              '添加失败: ' + (error.response?.data?.message || error.message)
-            );
+            console.error('提交表单失败:', error);
+            this.$message.error(this.isEdit ? '更新失败' : '添加失败');
           }
         }
       });
+    },
+    formatDate(dateStr) {
+      if (!dateStr) return '暂无数据';
+      try {
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) {
+          return '无效日期';
+        }
+        return date.toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
+      } catch (error) {
+        return '无效日期';
+      }
     }
   }
 };
@@ -225,7 +307,12 @@ export default {
 .admin-management {
   padding: 20px;
 }
+
 .operation-bar {
   margin-bottom: 20px;
 }
-</style> 
+
+.dialog-footer {
+  text-align: right;
+}
+</style>

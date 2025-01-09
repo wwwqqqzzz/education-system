@@ -6,14 +6,17 @@
 package com.example.education.entity;
 
 import lombok.Data;
+import java.util.Date;
 
 @Data
 public class Admin {
-    private int id;
+    private Integer id;
     private String username;
     private String password;
     private String name;
     private String phone;
     private String email;
+    private Date createdAt;
+    private Integer roleId;
 }
 

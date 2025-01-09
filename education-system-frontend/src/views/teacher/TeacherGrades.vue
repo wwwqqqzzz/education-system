@@ -1,14 +1,18 @@
 <template>
   <div class="grades-management">
-    <el-card>
-      <div slot="header">
-        <span>成绩管理</span>
+    <el-card class="glass-card">
+      <div slot="header" class="header">
+        <span class="title">成绩管理</span>
       </div>
-      
+
       <!-- 课程选择 -->
       <el-form :inline="true" class="filter-form">
         <el-form-item label="选择课程">
-          <el-select v-model="selectedCourse" placeholder="请选择课程" @change="handleCourseChange">
+          <el-select
+            v-model="selectedCourse"
+            placeholder="请选择课程"
+            @change="handleCourseChange"
+            class="custom-select">
             <el-option
               v-for="course in courses"
               :key="course.id"
@@ -19,11 +23,32 @@
         </el-form-item>
       </el-form>
 
-      <!-- 学生成绩表格 -->
-      <el-table v-if="selectedCourse" :data="students" border style="width: 100%">
-        <el-table-column prop="id" label="学号" width="100"></el-table-column>
-        <el-table-column prop="name" label="姓名" width="120"></el-table-column>
-        <el-table-column label="成绩" width="200">
+      <!-- 成绩表格 -->
+      <el-table
+        :data="students"
+        border
+        stripe
+        fit
+        v-loading="loading"
+        class="custom-table">
+        <el-table-column
+          prop="id"
+          label="学号"
+          min-width="120"
+          align="center">
+        </el-table-column>
+
+        <el-table-column
+          prop="name"
+          label="姓名"
+          min-width="120"
+          align="center">
+        </el-table-column>
+
+        <el-table-column
+          label="成绩"
+          min-width="120"
+          align="center">
           <template slot-scope="scope">
             <el-input-number
               v-model="scope.row.grade"
@@ -32,26 +57,36 @@
               :precision="1"
               :controls="false"
               size="mini"
-              style="width: 100px">
+              class="grade-input">
             </el-input-number>
-            <el-button
-              size="mini"
-              type="primary"
-              @click="saveGrade(scope.row)"
-              style="margin-left: 10px">
-              保存
-            </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="最后更新时间" width="180">
+
+        <el-table-column
+          label="最后更新时间"
+          min-width="180"
+          align="center">
           <template slot-scope="scope">
             {{ scope.row.created_at ? new Date(scope.row.created_at).toLocaleString() : '未录入' }}
           </template>
         </el-table-column>
-      </el-table>
 
-      <!-- 未选择课程时的提示 -->
-      <el-empty v-else description="请选择课程"></el-empty>
+        <el-table-column
+          label="操作"
+          min-width="120"
+          align="center"
+          fixed="right">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="primary"
+              @click="saveGrade(scope.row)"
+              class="save-button">
+              保存
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
   </div>
 </template>
@@ -134,15 +169,136 @@ export default {
   padding: 20px;
 }
 
-.filter-form {
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 20px;
   margin-bottom: 20px;
 }
 
-.el-input-number {
-  width: 130px;
+/* 修复标题颜色 */
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #303133;  /* 浅色模式下的颜色 */
 }
 
-.el-table {
-  margin-top: 20px;
+/* 深色模式适配 */
+.dark-theme .title {
+  color: var(--text-color) !important;
 }
-</style> 
+
+.filter-form {
+  margin: 20px 0;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  backdrop-filter: blur(5px);
+}
+
+/* Select 组件样式 */
+.custom-select {
+  width: 220px;
+}
+
+:deep(.el-select .el-input__inner) {
+  border-radius: 8px;
+}
+
+/* 表格样式 */
+.custom-table {
+  margin-top: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+}
+
+:deep(.el-table) {
+  width: 100% !important;
+}
+
+:deep(.el-table__header),
+:deep(.el-table__body) {
+  width: 100% !important;
+}
+
+:deep(.el-table .cell) {
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
+/* 深色模式适配 */
+:deep(.dark-theme .glass-card) {
+  background: rgba(30, 30, 30, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+:deep(.dark-theme .filter-form) {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+:deep(.dark-theme .title) {
+  color: #E6E6E6;
+}
+
+:deep(.dark-theme .el-form-item__label) {
+  color: #E6E6E6;
+}
+
+/* 成绩输入区域样式 */
+.grade-input {
+  width: 90px !important;
+}
+
+/* 数字输入框样式 */
+:deep(.el-input-number) {
+  width: 90px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+:deep(.el-input-number .el-input__inner) {
+  text-align: center;
+  padding: 0 5px;
+  height: 28px;
+  line-height: 28px;
+}
+
+.save-button {
+  padding: 5px 12px;
+}
+
+/* 深色模式下的输入框和按钮样式 */
+:deep(.dark-theme .el-input-number) {
+  background: rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:deep(.dark-theme .el-input-number .el-input__inner) {
+  background: transparent;
+  color: #E6E6E6;
+}
+
+:deep(.dark-theme .el-button--mini) {
+  background: rgba(64, 158, 255, 0.1);
+  border-color: rgba(64, 158, 255, 0.3);
+  color: #409EFF;
+}
+
+:deep(.dark-theme .el-button--mini:hover) {
+  background: rgba(64, 158, 255, 0.2);
+  border-color: rgba(64, 158, 255, 0.4);
+}
+
+:deep(.dark-theme .el-button--primary) {
+  background: #409EFF;
+  border-color: #409EFF;
+  color: #fff;
+}
+
+:deep(.dark-theme .el-button--primary:hover) {
+  background: #66b1ff;
+  border-color: #66b1ff;
+}
+</style>

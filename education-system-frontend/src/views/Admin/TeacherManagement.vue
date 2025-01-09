@@ -1,82 +1,149 @@
 <template>
   <div class="teacher-management">
     <div class="operation-bar">
-      <el-button type="primary" @click="handleAdd">添加教师</el-button>
+      <el-button type="primary" icon="el-icon-plus" @click="handleAdd">添加教师</el-button>
     </div>
     
-    <el-table :data="teachers" border style="width: 100%">
-      <el-table-column prop="id" label="工号" width="80"></el-table-column>
-      <el-table-column prop="username" label="用户名" width="120"></el-table-column>
-      <el-table-column prop="name" label="姓名" width="120"></el-table-column>
-      <el-table-column prop="phone" label="电话" width="120"></el-table-column>
-      <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
-      <el-table-column prop="department" label="所属院系"></el-table-column>
-      <el-table-column prop="hireDate" label="入职时间" width="180">
+    <el-table 
+      :data="teachers" 
+      border 
+      stripe
+      fit
+      style="width: 100%"
+      v-loading="loading">
+      <el-table-column 
+        prop="id" 
+        label="教师ID" 
+        min-width="80"
+        fixed
+        align="center">
+      </el-table-column>
+      
+      <el-table-column 
+        prop="username" 
+        label="用户名" 
+        min-width="120"
+        align="center">
+      </el-table-column>
+      
+      <el-table-column 
+        prop="name" 
+        label="姓名" 
+        min-width="100"
+        align="center">
+      </el-table-column>
+      
+      <el-table-column 
+        prop="phone" 
+        label="电话" 
+        min-width="120"
+        align="center">
+      </el-table-column>
+      
+      <el-table-column 
+        prop="email" 
+        label="邮箱" 
+        min-width="200"
+        align="center"
+        show-overflow-tooltip>
+      </el-table-column>
+      
+      <el-table-column 
+        prop="department" 
+        label="院系" 
+        min-width="150"
+        align="center"
+        show-overflow-tooltip>
+      </el-table-column>
+      
+      <el-table-column 
+        label="入职时间" 
+        min-width="180"
+        align="center">
         <template slot-scope="scope">
-          {{ scope.row.hireDate ? new Date(scope.row.hireDate).toLocaleDateString() : '未设置' }}
+          {{ formatDate(scope.row.hireDate) }}
         </template>
       </el-table-column>
-      <el-table-column prop="created_at" label="创建时间" width="180">
+      
+      <el-table-column 
+        label="操作" 
+        min-width="150"
+        fixed="right"
+        align="center">
         <template slot-scope="scope">
-          {{ new Date(scope.row.created_at).toLocaleString() }}
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="200">
-        <template slot-scope="scope">
-          <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+          <div class="table-operations">
+            <el-button 
+              size="mini" 
+              type="primary"
+              icon="el-icon-edit"
+              @click="handleEdit(scope.row)">
+              编辑
+            </el-button>
+            <el-button 
+              size="mini" 
+              type="danger"
+              icon="el-icon-delete"
+              @click="handleDelete(scope.row)">
+              删除
+            </el-button>
+          </div>
         </template>
       </el-table-column>
     </el-table>
 
-    <!-- 添加/编辑教师对话框 -->
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible">
-      <el-form :model="form" :rules="rules" ref="form" label-width="80px">
+    <!-- 添加/编辑对话框 -->
+    <el-dialog
+      :title="isEdit ? '编辑教师' : '添加教师'"
+      :visible.sync="dialogVisible"
+      width="50%">
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" :disabled="isEdit"></el-input>
+          <el-input v-model="form.username" :disabled="isEdit" placeholder="请输入用户名"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password" v-if="!isEdit">
-          <el-input v-model="form.password" type="password"></el-input>
+          <el-input v-model="form.password" type="password" placeholder="请输入密码"></el-input>
         </el-form-item>
         <el-form-item label="姓名" prop="name">
-          <el-input v-model="form.name"></el-input>
+          <el-input v-model="form.name" placeholder="请输入姓名"></el-input>
         </el-form-item>
         <el-form-item label="电话" prop="phone">
-          <el-input v-model="form.phone"></el-input>
+          <el-input v-model="form.phone" placeholder="请输入电话号码"></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input v-model="form.email"></el-input>
+          <el-input v-model="form.email" placeholder="请输入邮箱地址"></el-input>
         </el-form-item>
         <el-form-item label="所属院系" prop="department">
-          <el-input v-model="form.department"></el-input>
+          <el-input v-model="form.department" placeholder="请输入所属院系"></el-input>
         </el-form-item>
         <el-form-item label="入职时间" prop="hireDate">
           <el-date-picker
             v-model="form.hireDate"
             type="date"
-            placeholder="选择入职时间"
+            placeholder="请选择入职时间"
             value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitForm">确定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import request from '@/utils/request'
 
 export default {
   name: 'TeacherManagement',
   data() {
     return {
-      teachers: [], // 教师列表数据
-      dialogVisible: false, // 对话框显示状态
-      dialogTitle: '添加教师',
+      loading: false,
+      teachers: [],
+      dialogVisible: false,
+      isEdit: false,
+      currentId: null,
       form: {
         username: '',
         password: '',
@@ -107,29 +174,28 @@ export default {
         department: [
           { required: true, message: '请输入所属院系', trigger: 'blur' }
         ]
-      },
-      isEdit: false,
-      currentId: null
-    };
+      }
+    }
   },
   created() {
-    this.fetchTeachers();
+    this.fetchTeachers()
   },
   methods: {
-    // 获取教师列表
     async fetchTeachers() {
       try {
-        const response = await axios.get('/admin/teachers');
-        this.teachers = response.data;
+        this.loading = true
+        const response = await request.get('/admin/teachers')
+        console.log('获取到的教师数据:', response.data)
+        this.teachers = response.data
       } catch (error) {
-        console.error('获取教师列表失败:', error);
-        this.$message.error('获取教师列表失败');
+        console.error('获取教师列表失败:', error)
+        this.$message.error('获取教师列表失败')
+      } finally {
+        this.loading = false
       }
     },
-    // 点击添加按钮
     handleAdd() {
-      this.isEdit = false;
-      this.dialogTitle = '添加教师';
+      this.isEdit = false
       this.form = {
         username: '',
         password: '',
@@ -138,97 +204,82 @@ export default {
         email: '',
         department: '',
         hireDate: ''
-      };
-      this.dialogVisible = true;
+      }
+      this.dialogVisible = true
     },
-    // 点击编辑按钮
     handleEdit(row) {
-      this.isEdit = true;
-      this.currentId = row.id;
-      this.dialogTitle = '编辑教师';
-      this.form = {
-        username: row.username,
-        name: row.name,
-        department: row.department,
-        phone: row.phone,
-        email: row.email,
-        hireDate: row.hireDate ? row.hireDate.substring(0, 10) : ''
-      };
-      this.dialogVisible = true;
+      this.isEdit = true
+      this.currentId = row.id
+      this.form = { ...row }
+      this.dialogVisible = true
     },
-    // 点击删除按钮
     async handleDelete(row) {
       try {
         await this.$confirm('确认删除该教师?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        });
-        const response = await axios.delete(`/admin/teachers/${row.id}`);
-        if (response.data === "Teacher deleted successfully!") {
-          this.$message.success('删除成功');
-          this.fetchTeachers();
-        } else {
-          this.$message.error('删除失败');
-        }
+        })
+        await request.delete(`/admin/teachers/${row.id}`)
+        this.$message.success('删除成功')
+        this.fetchTeachers()
       } catch (error) {
         if (error !== 'cancel') {
-          console.error('删除教师失败:', error);
-          this.$message.error('删除失败');
+          console.error('删除失败:', error)
+          this.$message.error('删除失败')
         }
       }
     },
-    // 提交表单
     async submitForm() {
-      this.$refs.form.validate(async (valid) => {
+      this.$refs.form.validate(async valid => {
         if (valid) {
           try {
-            const formData = {
-              ...(this.isEdit && { id: this.currentId }),
-              username: this.form.username,
-              name: this.form.name,
-              department: this.form.department,
-              phone: this.form.phone,
-              email: this.form.email,
-              hireDate: this.form.hireDate || null
-            };
-
-            if (!this.isEdit) {
-              formData.password = this.form.password;
-            }
-
-            const url = this.isEdit ? 
-              `/admin/teachers/${this.currentId}` : 
-              '/admin/teachers';
-            const method = this.isEdit ? 'put' : 'post';
-
-            const response = await axios[method](url, formData);
-            
-            if (response.data.includes("successfully")) {
-              this.$message.success(this.isEdit ? '更新成功' : '添加成功');
-              this.dialogVisible = false;
-              await this.fetchTeachers();
-            } else {
-              this.$message.error(this.isEdit ? '更新失败' : '添加失败');
-            }
+            const url = this.isEdit ? `/admin/teachers/${this.currentId}` : '/admin/teachers'
+            const method = this.isEdit ? 'put' : 'post'
+            const response = await request[method](url, this.form)
+            console.log('提交响应:', response)
+            this.$message.success(this.isEdit ? '更新成功' : '添加成功')
+            this.dialogVisible = false
+            this.fetchTeachers()
           } catch (error) {
-            console.error('提交失败:', error.response?.data || error.message);
-            this.$message.error(
-              `${this.isEdit ? '更新' : '添加'}失败: ${error.response?.data || error.message}`
-            );
+            console.error(this.isEdit ? '更新失败:' : '添加失败:', error)
+            this.$message.error(this.isEdit ? '更新失败' : '添加失败')
           }
         }
-      });
+      })
+    },
+    formatDate(dateStr) {
+      if (!dateStr) return '暂无数据'
+      try {
+        const date = new Date(dateStr)
+        if (isNaN(date.getTime())) {
+          return '无效日期'
+        }
+        return date.toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      } catch (error) {
+        return '无效日期'
+      }
     }
   }
-};
+}
 </script>
 
 <style scoped>
 .teacher-management {
   padding: 20px;
 }
+
 .operation-bar {
   margin-bottom: 20px;
+}
+
+.dialog-footer {
+  text-align: right;
 }
 </style>

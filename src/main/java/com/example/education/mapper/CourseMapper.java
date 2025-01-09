@@ -9,7 +9,9 @@ import java.util.List;
 public interface CourseMapper {
 
     // 查询所有课程
-    @Select("SELECT * FROM course")
+    @Select("SELECT c.*, t.name as teacher_name " +
+            "FROM course c " +
+            "LEFT JOIN teacher t ON c.teacher_id = t.id")
     List<Course> findAll();
 
     // 根据课程 ID 查询课程

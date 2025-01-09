@@ -1,0 +1,412 @@
+/* 深色主题变量定义 */
+:root {
+  --bg-color: #141414;
+  --bg-color-light: #1f1f1f;
+  --text-color: #E6E6E6;
+  --text-color-light: #B0B0B0;
+  --border-color: #303030;
+  --table-header-bg: rgba(25, 25, 25, 0.8);
+  --table-stripe-bg: rgba(35, 35, 35, 0.8);
+}
+
+/* 深色主题全局样式 */
+.dark-theme {
+  /* 背景色 */
+  --bg-color: #141414;
+  --bg-color-light: #1f1f1f;
+  /* 文字颜色 */
+  --text-color: #E6E6E6;
+  --text-color-light: #B0B0B0;
+  /* 边框颜色 */
+  --border-color: #303030;
+  /* 主题色 */
+  --primary-color: #409EFF;
+  /* 表格相关 */
+  --table-header-bg: rgba(25, 25, 25, 0.8);
+  --table-stripe-bg: rgba(35, 35, 35, 0.8);
+  --table-hover: rgba(64, 158, 255, 0.1);
+}
+
+/* Element UI 组件深色模式适配 */
+.dark-theme .el-card {
+  background-color: var(--bg-color-light);
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+.dark-theme .el-table {
+  background-color: transparent;
+  color: var(--text-color);
+}
+
+.dark-theme .el-table th,
+.dark-theme .el-table tr {
+  background-color: var(--table-header-bg);
+}
+
+.dark-theme .el-table--striped .el-table__body tr.el-table__row--striped td {
+  background-color: var(--table-stripe-bg);
+}
+
+.dark-theme .el-table td,
+.dark-theme .el-table th.is-leaf {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.dark-theme .el-table--border td,
+.dark-theme .el-table--border th {
+  border-right: 1px solid var(--border-color);
+}
+
+.dark-theme .el-input__inner {
+  background-color: var(--bg-color);
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+.dark-theme .el-input__inner:hover,
+.dark-theme .el-input__inner:focus {
+  border-color: var(--primary-color);
+}
+
+.dark-theme .el-button--default {
+  background-color: transparent;
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+.dark-theme .el-button--default:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+/* 对话框深色模式 */
+.dark-theme .el-dialog {
+  background-color: var(--bg-color-light);
+}
+
+.dark-theme .el-dialog__title {
+  color: var(--text-color);
+}
+
+.dark-theme .el-dialog__body {
+  color: var(--text-color);
+}
+
+/* 下拉菜单深色模式 */
+.dark-theme .el-dropdown-menu {
+  background-color: var(--bg-color-light);
+  border-color: var(--border-color);
+}
+
+.dark-theme .el-dropdown-menu__item {
+  color: var(--text-color);
+}
+
+.dark-theme .el-dropdown-menu__item:hover {
+  background-color: var(--table-hover);
+}
+
+/* 分页深色模式 */
+.dark-theme .el-pagination {
+  color: var(--text-color);
+}
+
+.dark-theme .el-pagination button {
+  background-color: transparent;
+  color: var(--text-color);
+}
+
+/* 加载遮罩深色模式 */
+.dark-theme .el-loading-mask {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* 卡片深色模式补充 */
+.dark-theme .glass-card {
+  background: rgba(30, 30, 30, 0.95) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 表单深色模式补充 */
+.dark-theme .el-form-item__label {
+  color: var(--text-color) !important;
+}
+
+.dark-theme .el-form {
+  background-color: var(--bg-color-light);
+  color: var(--text-color);
+}
+
+.dark-theme .el-form-item__content {
+  color: var(--text-color);
+}
+
+/* Select 下拉框深色模式 */
+.dark-theme .el-select .el-input__inner {
+  background-color: rgba(35, 35, 35, 0.8) !important;
+}
+
+.dark-theme .el-select-dropdown {
+  background-color: var(--bg-color-light);
+  border-color: var(--border-color);
+}
+
+.dark-theme .el-select-dropdown__item {
+  color: var(--text-color);
+}
+
+.dark-theme .el-select-dropdown__item.hover,
+.dark-theme .el-select-dropdown__item:hover {
+  background-color: var(--table-hover);
+}
+
+.dark-theme .el-select-dropdown__item.selected {
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+/* 标题和文本深色模式 */
+.dark-theme .title {
+  color: var(--text-color) !important;
+}
+
+.dark-theme .header {
+  border-bottom-color: var(--border-color);
+}
+
+/* 输入框深色模式补充 */
+.dark-theme .el-input-number__decrease,
+.dark-theme .el-input-number__increase {
+  background-color: var(--bg-color);
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+.dark-theme .el-input-number__decrease:hover,
+.dark-theme .el-input-number__increase:hover {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+/* 消息框深色模式 */
+.dark-theme .el-message-box {
+  background-color: var(--bg-color-light);
+  border-color: var(--border-color);
+}
+
+.dark-theme .el-message-box__title {
+  color: var(--text-color);
+}
+
+.dark-theme .el-message-box__content {
+  color: var(--text-color);
+}
+
+.dark-theme .el-message-box__btns button {
+  background: transparent;
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+.dark-theme .el-message-box__btns button:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+/* 表格内容对齐 */
+.dark-theme .el-table .cell {
+  text-align: center;
+}
+
+/* 表格hover效果 */
+.dark-theme .el-table tbody tr:hover > td {
+  background-color: var(--table-hover) !important;
+}
+
+/* 帮助对话框深色模式补充 */
+.dark-theme .help-dialog {
+  background: var(--bg-color) !important;
+}
+
+.dark-theme .help-dialog .el-dialog__header {
+  background: var(--bg-color-light) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  padding: 20px 24px !important;
+}
+
+/* 添加关闭按钮的深色模式样式 */
+.dark-theme .help-dialog .el-dialog__headerbtn {
+  color: var(--text-color) !important;
+}
+
+.dark-theme .help-dialog .el-dialog__headerbtn .el-dialog__close {
+  color: var(--text-color-light) !important;
+}
+
+.dark-theme .help-dialog .el-dialog__headerbtn:hover .el-dialog__close {
+  color: var(--primary-color) !important;
+}
+
+.dark-theme .help-dialog .el-dialog__body {
+  background: var(--bg-color) !important;
+  color: var(--text-color) !important;
+  padding: 24px !important;
+}
+
+/* 帮助内容深色模式 */
+.dark-theme .help-section.glass-effect {
+  background: rgba(35, 35, 35, 0.95) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+  border-radius: 12px !important;
+  padding: 24px !important;
+  margin: 16px 0 !important;
+  transition: all 0.3s ease !important;
+}
+
+.dark-theme .help-section.glass-effect:hover {
+  background: rgba(40, 40, 40, 0.95) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 帮助文档文字样式深色模式 */
+.dark-theme .help-section h4 {
+  color: var(--text-color) !important;
+  margin: 0 0 16px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  position: relative !important;
+  padding-left: 12px !important;
+}
+
+.dark-theme .help-section h4::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 16px;
+  background: var(--primary-color);
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgba(64, 158, 255, 0.3);
+}
+
+.dark-theme .help-section p {
+  color: var(--text-color-light) !important;
+  margin: 12px 0 !important;
+  line-height: 1.6 !important;
+}
+
+.dark-theme .help-section ul {
+  padding-left: 20px !important;
+  margin: 12px 0 !important;
+}
+
+.dark-theme .help-section li {
+  color: var(--text-color-light) !important;
+  margin: 8px 0 !important;
+  line-height: 1.6 !important;
+}
+
+/* Collapse 组件深色模式补充 */
+.dark-theme .el-collapse {
+  border-color: var(--border-color) !important;
+  background: transparent !important;
+}
+
+.dark-theme .el-collapse-item__header {
+  background: var(--bg-color-light) !important;
+  color: var(--text-color) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  padding: 0 20px !important;
+  height: 50px !important;
+  line-height: 50px !important;
+  transition: all 0.3s ease !important;
+}
+
+.dark-theme .el-collapse-item__header:hover {
+  background: rgba(64, 158, 255, 0.1) !important;
+}
+
+.dark-theme .el-collapse-item__wrap {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.dark-theme .el-collapse-item__content {
+  background: transparent !important;
+  color: var(--text-color-light) !important;
+  padding: 16px 20px !important;
+}
+
+/* 标题和标签深色模式补充 */
+.dark-theme .title,
+.dark-theme .el-descriptions__title,
+.dark-theme .el-descriptions__label {
+  color: var(--text-color) !important;
+}
+
+.dark-theme .el-descriptions__content {
+  color: var(--text-color-light) !important;
+}
+
+/* 表单标签深色模式补充 */
+.dark-theme .el-form-item__label,
+.dark-theme .el-form-item__content {
+  color: var(--text-color) !important;
+}
+
+/* 静态文本深色模式 */
+.dark-theme .static-text {
+  color: var(--text-color-light) !important;
+}
+
+/* 描述列表深色模式 */
+.dark-theme .el-descriptions {
+  background-color: transparent !important;
+}
+
+.dark-theme .el-descriptions__body {
+  background-color: transparent !important;
+}
+
+.dark-theme .el-descriptions-item__label {
+  background-color: var(--bg-color-light) !important;
+  color: var(--text-color) !important;
+}
+
+.dark-theme .el-descriptions-item__content {
+  background-color: var(--bg-color) !important;
+  color: var(--text-color-light) !important;
+}
+
+/* 表单项深色模式补充 */
+.dark-theme .el-form-item {
+  margin-bottom: 22px !important;
+}
+
+.dark-theme .el-form-item__label {
+  color: var(--text-color) !important;
+  font-weight: 500 !important;
+}
+
+.dark-theme .el-form-item__content {
+  color: var(--text-color-light) !important;
+}
+
+/* 静态文本和标签深色模式 */
+.dark-theme span,
+.dark-theme label {
+  color: var(--text-color) !important;
+}
+
+.dark-theme .text-secondary {
+  color: var(--text-color-light) !important;
+} 
