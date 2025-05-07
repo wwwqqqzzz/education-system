@@ -1,5 +1,5 @@
 <script>
-import request from '@/utils/request'
+import request from '../utils/request'
 
 export default {
   name: "Login",
@@ -11,7 +11,7 @@ export default {
         callback();
       }
     };
-    
+
     const validateResetConfirmPassword = (rule, value, callback) => {
       if (value !== this.resetPasswordForm.newPassword) {
         callback(new Error('两次输入的密码不一致'));
@@ -19,7 +19,7 @@ export default {
         callback();
       }
     };
-    
+
     return {
       loginForm: {
         username: "",
@@ -133,7 +133,7 @@ export default {
           role: this.registerForm.role,
           email: this.registerForm.email
         });
-        
+
         if (response.data.success) {
           this.$message.success('注册成功,请登录');
           this.$refs.registerForm.resetFields();
@@ -156,7 +156,7 @@ export default {
           newPassword: this.resetPasswordForm.newPassword,
           role: this.resetPasswordForm.role
         });
-        
+
         if (response.data.success) {
           this.$message.success('密码重置成功,请使用新密码登录');
           this.currentForm = 'login';

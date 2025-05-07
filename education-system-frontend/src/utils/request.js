@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
-import router from '@/router'
+import router from '../router'
 
 const request = axios.create({
     baseURL: 'http://localhost:9099',
@@ -55,4 +55,4 @@ request.interceptors.response.use(
     }
 )
 
-export default request 
+export default request
