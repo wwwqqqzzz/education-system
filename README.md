@@ -2,7 +2,7 @@
 
 ## 项目简介
 这是一个基于 Spring Boot + Vue.js 的教育管理系统，支持管理员、教师和学生三种角色的日常教务管理。
-
+![](https://cdn.jsdelivr.net/gh/wwwqqqzzz/Image/img/1746626110941-5392fb210907bcc28cc0c5f1b0508577.png)
 ## 技术栈
 ### 后端
 - Spring Boot
