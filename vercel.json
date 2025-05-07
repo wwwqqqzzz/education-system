@@ -1,43 +1,9 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "education-system-frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist",
-        "buildCommand": "cd education-system-frontend && npm install && npm run build"
-      }
-    }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
-  "routes": [
-    {
-      "src": "/static/(.*)",
-      "dest": "/education-system-frontend/dist/static/$1"
-    },
-    {
-      "src": "/js/(.*)",
-      "dest": "/education-system-frontend/dist/js/$1"
-    },
-    {
-      "src": "/css/(.*)",
-      "dest": "/education-system-frontend/dist/css/$1"
-    },
-    {
-      "src": "/img/(.*)",
-      "dest": "/education-system-frontend/dist/img/$1"
-    },
-    {
-      "src": "/fonts/(.*)",
-      "dest": "/education-system-frontend/dist/fonts/$1"
-    },
-    {
-      "src": "/favicon.ico",
-      "dest": "/education-system-frontend/dist/favicon.ico"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/education-system-frontend/dist/index.html"
-    }
-  ]
+  "buildCommand": "cd education-system-frontend && npm install && npm run build",
+  "outputDirectory": "education-system-frontend/dist",
+  "framework": "vue",
+  "installCommand": "cd education-system-frontend && npm install"
 }
