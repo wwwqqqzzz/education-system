@@ -1,9 +1,9 @@
-// {
-//   "rewrites": [
-//     { "source": "/(.*)", "destination": "/index.html" }
-//   ],
-//   "buildCommand": "cd education-system-frontend && npm install && npm run build",
-//   "outputDirectory": "education-system-frontend/dist",
-//   "framework": "vue",
-//   "installCommand": "cd education-system-frontend && npm install"
-// }
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "buildCommand": "cd education-system-frontend && npm install && npm run build",
+  "outputDirectory": "education-system-frontend/dist",
+  "framework": "vue",
+  "installCommand": "cd education-system-frontend && npm install"
+}
